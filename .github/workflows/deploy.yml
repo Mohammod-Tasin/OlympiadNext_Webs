@@ -1,8 +1,11 @@
 name: Deploy to GitHub Pages
 
+# Disabled in favor of Vercel — the push trigger is commented out below.
+# Re-enable by uncommenting it, or run on demand via workflow_dispatch
+# (Actions tab -> Deploy to GitHub Pages -> Run workflow).
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -31,6 +34,7 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_BASE_PATH: /OlympiadNext_Webs
+          NEXT_STATIC_EXPORT: "true"
         run: npm run build
 
       - name: Add .nojekyll
