@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as authApi from "@/lib/api/authApi";
-import { ApiError } from "@/lib/api/client";
+import { ApiError, configureApiClient } from "@/lib/api/client";
 import type { AuthStatus, User } from "@/types/auth";
 
 interface AuthContextValue {
@@ -25,6 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  // The API client reads this ref (not React state) so a token set moments
+  // ago is visible to the very next fetch, without waiting on a re-render.
+  const accessTokenRef = useRef<string | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearScheduledRefresh = () => {
@@ -34,42 +38,78 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const applySession = useCallback(async (token: string, expiresAt: string) => {
-    try {
-      const user = await authApi.me(token);
-      setAccessToken(token);
-      setUser(user);
-      setStatus("authenticated");
-    } catch (err) {
-      clearScheduledRefresh();
-      setAccessToken(null);
-      setUser(null);
-      setStatus("unauthenticated");
-      throw err;
-    }
+  const clearSession = useCallback(() => {
+    clearScheduledRefresh();
+    accessTokenRef.current = null;
+    setAccessToken(null);
+    setUser(null);
+    setStatus("unauthenticated");
+  }, []);
+
+  // Stores the token (ref + state) and schedules the next proactive
+  // refresh just before it expires.
+  const applyToken = useCallback((token: string, expiresAt: string) => {
+    accessTokenRef.current = token;
+    setAccessToken(token);
 
     clearScheduledRefresh();
     const delay = Math.max(new Date(expiresAt).getTime() - Date.now() - REFRESH_SKEW_MS, 0);
     refreshTimer.current = setTimeout(() => {
-      void silentRefresh();
+      void refreshAccessToken();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, delay);
   }, []);
 
-  const silentRefresh = useCallback(async () => {
+  const syncIdentity = useCallback(async () => {
+    try {
+      const me = await authApi.me();
+      setUser(me);
+      setStatus("authenticated");
+    } catch (err) {
+      clearSession();
+      throw err;
+    }
+  }, [clearSession]);
+
+  const applySession = useCallback(
+    async (token: string, expiresAt: string) => {
+      applyToken(token, expiresAt);
+      await syncIdentity();
+    },
+    [applyToken, syncIdentity],
+  );
+
+  // Passed to the API client's 401 interceptor, and reused for the
+  // proactive timer above and the initial-mount bootstrap below. A missed
+  // proactive refresh (backgrounded tab, clock drift) is recovered
+  // reactively the next time any request comes back 401.
+  const refreshAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       const res = await authApi.refresh();
-      await applySession(res.access_token, res.access_token_expires_at);
+      applyToken(res.access_token, res.access_token_expires_at);
+      return res.access_token;
     } catch {
-      clearScheduledRefresh();
-      setAccessToken(null);
-      setUser(null);
-      setStatus("unauthenticated");
+      clearSession();
+      return null;
     }
-  }, [applySession]);
+  }, [applyToken, clearSession]);
 
   useEffect(() => {
-    void silentRefresh();
+    configureApiClient({
+      getAccessToken: () => accessTokenRef.current,
+      refreshAccessToken,
+    });
+
+    void (async () => {
+      const token = await refreshAccessToken();
+      if (!token) return;
+      try {
+        await syncIdentity();
+      } catch {
+        // clearSession already ran inside syncIdentity's catch
+      }
+    })();
+
     return clearScheduledRefresh;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -99,16 +139,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    clearScheduledRefresh();
     try {
       await authApi.logout();
     } catch (err) {
       if (!(err instanceof ApiError)) throw err;
+    } finally {
+      clearSession();
     }
-    setAccessToken(null);
-    setUser(null);
-    setStatus("unauthenticated");
-  }, []);
+  }, [clearSession]);
 
   return (
     <AuthContext.Provider value={{ status, user, accessToken, login, register, loginWithGoogle, logout }}>
