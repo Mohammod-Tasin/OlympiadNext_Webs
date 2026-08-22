@@ -12,9 +12,11 @@ export class ApiError extends Error {
 
 type TokenGetter = () => string | null;
 type RefreshHandler = () => Promise<string | null>;
+type AuthFailureHandler = () => void;
 
 let getAccessToken: TokenGetter = () => null;
 let refreshAccessToken: RefreshHandler = async () => null;
+let onAuthFailure: AuthFailureHandler = () => {};
 let refreshPromise: Promise<string | null> | null = null;
 
 /**
@@ -22,9 +24,14 @@ let refreshPromise: Promise<string | null> | null = null;
  * mount so every apiFetch call can attach the current access token and
  * recover from a 401 without any component owning fetch/refresh logic.
  */
-export function configureApiClient(config: { getAccessToken: TokenGetter; refreshAccessToken: RefreshHandler }) {
+export function configureApiClient(config: {
+  getAccessToken: TokenGetter;
+  refreshAccessToken: RefreshHandler;
+  onAuthFailure: AuthFailureHandler;
+}) {
   getAccessToken = config.getAccessToken;
   refreshAccessToken = config.refreshAccessToken;
+  onAuthFailure = config.onAuthFailure;
 }
 
 /** Coalesces concurrent 401s onto a single in-flight refresh call. */
@@ -72,6 +79,11 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
     const newToken = await refreshOnce();
     if (newToken) {
       res = await doFetch(path, options, newToken);
+      if (res.status === 401) {
+        onAuthFailure();
+      }
+    } else {
+      onAuthFailure();
     }
   }
 

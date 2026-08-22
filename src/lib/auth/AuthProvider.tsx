@@ -98,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     configureApiClient({
       getAccessToken: () => accessTokenRef.current,
       refreshAccessToken,
+      onAuthFailure: clearSession,
     });
 
     void (async () => {
