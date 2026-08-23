@@ -1,26 +1,30 @@
 import { apiFetch } from "./client";
+import { getDeviceFingerprint } from "@/lib/utils/fingerprint";
 import type { AuthResponse, User } from "@/types/auth";
 
-export function register(email: string, password: string) {
+export async function register(email: string, password: string) {
+  const device_fingerprint = await getDeviceFingerprint();
   return apiFetch<AuthResponse>("/api/auth/register", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, device_fingerprint },
     skipAuth: true,
   });
 }
 
-export function login(email: string, password: string) {
+export async function login(email: string, password: string) {
+  const device_fingerprint = await getDeviceFingerprint();
   return apiFetch<AuthResponse>("/api/auth/login", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, device_fingerprint },
     skipAuth: true,
   });
 }
 
-export function loginWithGoogle(idToken: string) {
+export async function loginWithGoogle(idToken: string) {
+  const device_fingerprint = await getDeviceFingerprint();
   return apiFetch<AuthResponse>("/api/auth/google", {
     method: "POST",
-    body: { id_token: idToken },
+    body: { id_token: idToken, device_fingerprint },
     skipAuth: true,
   });
 }
