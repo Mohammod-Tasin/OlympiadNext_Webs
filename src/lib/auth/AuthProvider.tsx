@@ -13,6 +13,7 @@ interface AuthContextValue {
   register: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -150,7 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearSession]);
 
   return (
-    <AuthContext.Provider value={{ status, user, accessToken, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider
+      value={{ status, user, accessToken, login, register, loginWithGoogle, logout, refreshUser: syncIdentity }}
+    >
       {children}
     </AuthContext.Provider>
   );

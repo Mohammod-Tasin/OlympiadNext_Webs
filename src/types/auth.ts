@@ -1,6 +1,9 @@
 export interface User {
   user_id: string;
   email: string;
+  phone_number?: string;
+  is_email_verified: boolean;
+  is_phone_verified: boolean;
 }
 
 export interface AuthResponse {

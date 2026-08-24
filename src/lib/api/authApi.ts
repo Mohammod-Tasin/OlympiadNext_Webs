@@ -42,3 +42,24 @@ export function logout() {
 export function me() {
   return apiFetch<User>("/api/auth/me");
 }
+
+export function updatePhoneNumber(phone_number: string) {
+  return apiFetch<{ message: string }>("/api/auth/update-phone", {
+    method: "POST",
+    body: { phone_number },
+  });
+}
+
+export function sendOTP(type: "email" | "phone") {
+  return apiFetch<{ message: string }>("/api/auth/send-otp", {
+    method: "POST",
+    body: { type },
+  });
+}
+
+export function verifyOTP(type: "email" | "phone", code: string) {
+  return apiFetch<{ message: string }>("/api/auth/verify-otp", {
+    method: "POST",
+    body: { type, code },
+  });
+}
