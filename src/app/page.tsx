@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { HeroSection } from "@/components/home/HeroSection";
+import { StatsSection } from "@/components/home/StatsSection";
 import { useAuth } from "@/lib/auth/useAuth";
 
 export default function HomePage() {
@@ -11,14 +13,13 @@ export default function HomePage() {
   useEffect(() => {
     if (status === "authenticated") {
       router.replace("/dashboard");
-    } else if (status === "unauthenticated") {
-      router.replace("/login");
     }
   }, [status, router]);
 
   return (
-    <div className="page-center">
-      <p>Loading...</p>
-    </div>
+    <>
+      <HeroSection />
+      <StatsSection />
+    </>
   );
 }
