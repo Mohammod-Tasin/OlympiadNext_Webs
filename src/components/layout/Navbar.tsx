@@ -26,7 +26,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/40 bg-white/60 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-black/5 bg-white/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="text-lg font-bold text-olympiad-900">
           OlympiadNext
@@ -85,7 +85,7 @@ export function Navbar() {
       </nav>
 
       {isMenuOpen && (
-        <div className="border-t border-white/40 bg-white/60 px-4 pb-4 backdrop-blur-md md:hidden">
+        <div className="border-t border-black/5 bg-white/80 px-4 pb-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-3 pt-4">
             {NAV_LINKS.map((link) => (
               <Link
