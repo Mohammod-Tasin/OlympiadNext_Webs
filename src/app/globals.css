@@ -1,3 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-olympiad-50: #c1e8ff;
+  --color-olympiad-300: #7da0ca;
+  --color-olympiad-500: #5483b3;
+  --color-olympiad-800: #052659;
+  --color-olympiad-900: #021024;
+}
+
 :root {
   color-scheme: light;
   --bg: #f5f5f7;
