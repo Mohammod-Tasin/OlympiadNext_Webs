@@ -1,3 +1,5 @@
+import { getDeviceFingerprint } from "../utils/fingerprint";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 export class ApiError extends Error {
@@ -52,13 +54,15 @@ interface FetchOptions {
   skipAuth?: boolean;
 }
 
-function doFetch(path: string, options: FetchOptions, token: string | null): Promise<Response> {
+async function doFetch(path: string, options: FetchOptions, token: string | null): Promise<Response> {
+  const deviceFingerprint = await getDeviceFingerprint();
   return fetch(`${API_URL}${path}`, {
     method: options.method ?? "GET",
     credentials: "include",
     headers: {
       ...(options.body ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(deviceFingerprint ? { "X-Device-Fingerprint": deviceFingerprint } : {}),
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
