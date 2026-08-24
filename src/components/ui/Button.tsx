@@ -11,7 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-olympiad-500 text-white hover:bg-olympiad-800",
+  primary: "bg-olympiad-500 text-white shadow-md shadow-olympiad-500/20 hover:bg-olympiad-800",
   outline: "border-2 border-olympiad-500 text-olympiad-800 hover:bg-olympiad-50",
   ghost: "text-olympiad-800 hover:bg-olympiad-50",
 };
@@ -34,7 +34,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={isDisabled}
       aria-busy={loading || undefined}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors",
+        "inline-flex items-center justify-center gap-2 rounded-full font-medium transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-olympiad-300 focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-60",
         variantClasses[variant],

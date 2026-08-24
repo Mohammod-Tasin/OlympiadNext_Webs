@@ -28,8 +28,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         aria-invalid={!!error || undefined}
         aria-describedby={error ? errorId : undefined}
         className={cn(
-          "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-olympiad-900",
-          "focus:border-olympiad-500 focus:outline-none focus:ring-2 focus:ring-olympiad-300",
+          "w-full rounded-xl border border-white/60 bg-white/50 px-3 py-2 text-sm text-olympiad-900 backdrop-blur-md",
+          "focus:border-olympiad-500 focus:bg-white/80 focus:outline-none focus:ring-2 focus:ring-olympiad-300",
           "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-60",
           error && "border-red-500 focus:border-red-500 focus:ring-red-200",
           className,
