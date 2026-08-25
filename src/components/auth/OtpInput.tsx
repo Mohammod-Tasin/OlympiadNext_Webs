@@ -36,12 +36,16 @@ export function OtpInput({ value, onChange, disabled }: OtpInputProps) {
     }
   }
 
-  function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, LENGTH);
+  function handlePaste(index: number, e: ClipboardEvent<HTMLInputElement>) {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "");
     if (!pasted) return;
     e.preventDefault();
-    onChange(pasted);
-    inputs.current[Math.min(pasted.length, LENGTH - 1)]?.focus();
+    const next = digits.slice();
+    for (let i = 0; i < pasted.length && index + i < LENGTH; i++) {
+      next[index + i] = pasted[i];
+    }
+    onChange(next.join("").slice(0, LENGTH));
+    inputs.current[Math.min(index + pasted.length, LENGTH - 1)]?.focus();
   }
 
   return (
@@ -55,7 +59,7 @@ export function OtpInput({ value, onChange, disabled }: OtpInputProps) {
           value={digit}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
-          onPaste={handlePaste}
+          onPaste={(e) => handlePaste(index, e)}
           disabled={disabled}
           inputMode="numeric"
           autoComplete="one-time-code"

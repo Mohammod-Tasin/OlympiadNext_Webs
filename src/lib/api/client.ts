@@ -36,8 +36,12 @@ export function configureApiClient(config: {
   onAuthFailure = config.onAuthFailure;
 }
 
-/** Coalesces concurrent 401s onto a single in-flight refresh call. */
-function refreshOnce(): Promise<string | null> {
+/**
+ * Coalesces every refresh trigger (401 retry, AuthProvider's proactive
+ * timer, and its mount bootstrap) onto a single in-flight refresh call, so
+ * concurrent triggers never race two refresh requests against the backend.
+ */
+export function refreshOnce(): Promise<string | null> {
   if (!refreshPromise) {
     refreshPromise = refreshAccessToken().finally(() => {
       refreshPromise = null;

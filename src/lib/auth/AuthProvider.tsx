@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as authApi from "@/lib/api/authApi";
-import { ApiError, configureApiClient } from "@/lib/api/client";
+import { ApiError, configureApiClient, refreshOnce } from "@/lib/api/client";
 import type { AuthStatus, User } from "@/types/auth";
 
 interface AuthContextValue {
@@ -21,6 +21,21 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 // Refresh a little before actual expiry so an in-flight request never
 // races an access token that just died.
 const REFRESH_SKEW_MS = 30_000;
+
+// The access token itself is never persisted (see doFetch's comment), so
+// cross-tab sync broadcasts a small sentinel instead: other tabs react to
+// it by re-deriving their own session from the shared refresh-token cookie
+// rather than by reading a token out of storage.
+const AUTH_STATUS_KEY = "auth_status";
+
+function broadcastAuthStatus(kind: "in" | "out") {
+  try {
+    localStorage.setItem(AUTH_STATUS_KEY, `${kind}:${Date.now()}`);
+  } catch {
+    // Storage can be unavailable (private browsing, disabled) - cross-tab
+    // sync is a nicety, not a requirement for this tab to work.
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
@@ -56,8 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearScheduledRefresh();
     const delay = Math.max(new Date(expiresAt).getTime() - Date.now() - REFRESH_SKEW_MS, 0);
     refreshTimer.current = setTimeout(() => {
-      void refreshAccessToken();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      void refreshOnce();
     }, delay);
   }, []);
 
@@ -76,14 +90,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (token: string, expiresAt: string) => {
       applyToken(token, expiresAt);
       await syncIdentity();
+      broadcastAuthStatus("in");
     },
     [applyToken, syncIdentity],
   );
 
-  // Passed to the API client's 401 interceptor, and reused for the
-  // proactive timer above and the initial-mount bootstrap below. A missed
-  // proactive refresh (backgrounded tab, clock drift) is recovered
-  // reactively the next time any request comes back 401.
+  // The underlying refresh call. Never invoke this directly outside of
+  // configureApiClient's wiring below - every actual refresh trigger (the
+  // proactive timer, the mount bootstrap, and the API client's 401 retry)
+  // goes through the client's `refreshOnce` singleton instead, so
+  // concurrent triggers coalesce onto one in-flight request.
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       const res = await authApi.refresh();
@@ -91,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return res.access_token;
     } catch {
       clearSession();
+      broadcastAuthStatus("out");
       return null;
     }
   }, [applyToken, clearSession]);
@@ -103,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     void (async () => {
-      const token = await refreshAccessToken();
+      const token = await refreshOnce();
       if (!token) return;
       try {
         await syncIdentity();
@@ -115,6 +132,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return clearScheduledRefresh;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Cross-tab sync: the access token itself is never persisted, but login/
+  // logout broadcast a small sentinel so other tabs can react. A "logged
+  // out" broadcast clears this tab's session immediately; a "logged in"
+  // broadcast makes this tab pull a fresh session over the shared
+  // refresh-token cookie rather than trusting anything read from storage.
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== AUTH_STATUS_KEY || !e.newValue) return;
+      const kind = e.newValue.split(":")[0];
+      if (kind === "out") {
+        clearSession();
+      } else if (kind === "in") {
+        void refreshOnce().then((token) => {
+          if (token) void syncIdentity();
+        });
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [clearSession, syncIdentity]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -147,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!(err instanceof ApiError)) throw err;
     } finally {
       clearSession();
+      broadcastAuthStatus("out");
     }
   }, [clearSession]);
 

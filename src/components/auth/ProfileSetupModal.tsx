@@ -232,7 +232,8 @@ export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
                 <button
                   type="button"
                   onClick={() => setStep("choose")}
-                  className="text-sm text-olympiad-800/60 hover:text-olympiad-800"
+                  disabled={submitting}
+                  className="text-sm text-olympiad-800/60 hover:text-olympiad-800 disabled:opacity-60"
                 >
                   Back
                 </button>
