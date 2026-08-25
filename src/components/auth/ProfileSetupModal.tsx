@@ -65,6 +65,7 @@ export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
       setTarget(null);
       setCode("");
       setError(null);
+      setSubmitting(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);

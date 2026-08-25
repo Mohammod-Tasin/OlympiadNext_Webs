@@ -54,18 +54,34 @@ interface FetchOptions {
   skipAuth?: boolean;
 }
 
+const REQUEST_TIMEOUT_MS = 12_000;
+
 async function doFetch(path: string, options: FetchOptions, token: string | null): Promise<Response> {
   const deviceFingerprint = await getDeviceFingerprint();
-  return fetch(`${API_URL}${path}`, {
-    method: options.method ?? "GET",
-    credentials: "include",
-    headers: {
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(deviceFingerprint ? { "X-Device-Fingerprint": deviceFingerprint } : {}),
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    return await fetch(`${API_URL}${path}`, {
+      method: options.method ?? "GET",
+      credentials: "include",
+      signal: controller.signal,
+      headers: {
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(deviceFingerprint ? { "X-Device-Fingerprint": deviceFingerprint } : {}),
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError(408, "Request timed out");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 /**
