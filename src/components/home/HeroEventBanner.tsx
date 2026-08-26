@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { useAuth } from "@/lib/auth/useAuth";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 
@@ -74,6 +75,8 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
             </svg>
             {config.eventDate}
           </div>
+
+          <CountdownTimer targetDate={config.eventDateISO} />
 
           <p className="max-w-lg text-lg text-olympiad-800/80">{config.description}</p>
 

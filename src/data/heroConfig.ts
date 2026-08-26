@@ -3,6 +3,9 @@ export interface HeroEventConfig {
   subjectTitle: string;
   /** Pre-formatted date/time to display, e.g. "September 15, 2026 • 10:00 AM". */
   eventDate: string;
+  /** The same date/time as `eventDate`, as an ISO 8601 string with an explicit
+   * offset, so the countdown timer computes against an unambiguous instant. */
+  eventDateISO: string;
   /** Short tagline shown under the title. */
   description: string;
   /** Path (local under /public, or a full URL) to the hero illustration. */
@@ -22,6 +25,7 @@ export interface HeroEventConfig {
 export const heroConfig: HeroEventConfig = {
   subjectTitle: "National Math Olympiad 2026",
   eventDate: "September 15, 2026 • 10:00 AM",
+  eventDateISO: "2026-09-15T10:00:00+06:00",
   description:
     "Compete with the brightest young mathematicians in the country. Register your school and take on challenging, curriculum-aligned problems designed to sharpen real olympiad instincts.",
   imagePath: "/assets/math.svg",
