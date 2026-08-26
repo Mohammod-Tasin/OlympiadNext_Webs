@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as authApi from "@/lib/api/authApi";
+import type { RegisterData } from "@/lib/api/authApi";
 import { ApiError, configureApiClient, refreshOnce } from "@/lib/api/client";
 import type { AuthStatus, User } from "@/types/auth";
 
@@ -10,7 +11,7 @@ interface AuthContextValue {
   user: User | null;
   accessToken: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -163,8 +164,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const register = useCallback(
-    async (email: string, password: string) => {
-      const res = await authApi.register(email, password);
+    async (data: RegisterData) => {
+      const res = await authApi.register(data);
       await applySession(res.access_token, res.access_token_expires_at);
     },
     [applySession],

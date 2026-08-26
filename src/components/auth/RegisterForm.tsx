@@ -7,16 +7,22 @@ import { useAuth } from "@/lib/auth/useAuth";
 import { ApiError } from "@/lib/api/client";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { GoogleSignInButton } from "./GoogleSignInButton";
+import { LEVEL_OPTIONS, MEDIUM_OPTIONS } from "@/lib/constants/academic";
 
 const MIN_PASSWORD_LENGTH = 8;
 
 export function RegisterForm() {
   const { register } = useAuth();
   const router = useRouter();
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [institutionName, setInstitutionName] = useState("");
+  const [level, setLevel] = useState("");
+  const [medium, setMedium] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -31,7 +37,14 @@ export function RegisterForm() {
 
     setSubmitting(true);
     try {
-      await register(email, password);
+      await register({
+        email,
+        password,
+        full_name: fullName.trim(),
+        institution_name: institutionName.trim(),
+        level,
+        medium,
+      });
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Registration failed");
@@ -50,6 +63,15 @@ export function RegisterForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
+            id="full-name"
+            label="Full name"
+            type="text"
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+
+          <Input
             id="email"
             label="Email"
             type="email"
@@ -67,6 +89,37 @@ export function RegisterForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          <Input
+            id="institution"
+            label="Institution name"
+            type="text"
+            required
+            value={institutionName}
+            onChange={(e) => setInstitutionName(e.target.value)}
+          />
+
+          <Select id="level" label="Level" required value={level} onChange={(e) => setLevel(e.target.value)}>
+            <option value="" disabled>
+              Select your level
+            </option>
+            {LEVEL_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Select>
+
+          <Select id="medium" label="Medium" required value={medium} onChange={(e) => setMedium(e.target.value)}>
+            <option value="" disabled>
+              Select your medium
+            </option>
+            {MEDIUM_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </Select>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 

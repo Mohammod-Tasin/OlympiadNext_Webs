@@ -9,16 +9,10 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import type { User } from "@/types/auth";
+import { LEVEL_OPTIONS, MEDIUM_OPTIONS } from "@/lib/constants/academic";
 
 type Step = "phone" | "choose" | "code" | "academic";
 type Target = "email" | "phone";
-
-const LEVEL_OPTIONS = [
-  "Junior (Class 6 - 8)",
-  "Secondary (Class 9 - 10)",
-  "Higher Secondary (Class 11 - 12 / HSC)",
-];
-const MEDIUM_OPTIONS = ["Bangla", "English"];
 
 interface ProfileSetupModalProps {
   open: boolean;

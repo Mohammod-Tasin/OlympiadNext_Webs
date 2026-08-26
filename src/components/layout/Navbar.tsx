@@ -13,11 +13,12 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
-  const { status, logout } = useAuth();
+  const { status, user, logout } = useAuth();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isAuthenticated = status === "authenticated";
+  const displayName = user?.full_name || user?.email;
 
   async function handleLogout() {
     setIsMenuOpen(false);
@@ -45,6 +46,7 @@ export function Navbar() {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
               <Link
                 href="/dashboard"
                 className="text-sm font-medium text-olympiad-800 transition-colors hover:text-olympiad-500"
@@ -61,7 +63,7 @@ export function Navbar() {
                 Login
               </Button>
               <Button variant="primary" size="sm" onClick={() => router.push("/register")}>
-                Register
+                Sign Up
               </Button>
             </div>
           )}
@@ -100,6 +102,7 @@ export function Navbar() {
 
             {isAuthenticated ? (
               <>
+                <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
                 <Link
                   href="/dashboard"
                   className="text-sm font-medium text-olympiad-800"
@@ -133,7 +136,7 @@ export function Navbar() {
                     router.push("/register");
                   }}
                 >
-                  Register
+                  Sign Up
                 </Button>
               </div>
             )}

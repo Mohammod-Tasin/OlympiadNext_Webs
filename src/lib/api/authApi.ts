@@ -2,11 +2,20 @@ import { apiFetch } from "./client";
 import { getDeviceFingerprint } from "@/lib/utils/fingerprint";
 import type { AuthResponse, User } from "@/types/auth";
 
-export async function register(email: string, password: string) {
+export interface RegisterData {
+  email: string;
+  password: string;
+  full_name: string;
+  institution_name: string;
+  level: string;
+  medium: string;
+}
+
+export async function register(data: RegisterData) {
   const device_fingerprint = await getDeviceFingerprint();
   return apiFetch<AuthResponse>("/api/auth/register", {
     method: "POST",
-    body: { email, password, device_fingerprint },
+    body: { ...data, device_fingerprint },
     skipAuth: true,
   });
 }

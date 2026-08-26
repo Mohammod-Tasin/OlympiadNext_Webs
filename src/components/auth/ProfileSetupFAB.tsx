@@ -27,6 +27,16 @@ export function ProfileSetupFAB() {
     return () => clearTimeout(timer);
   }, [needsSetup]);
 
+  // Open the modal as soon as setup becomes necessary (e.g. right after a
+  // Google OAuth sign-in) instead of waiting for the user to notice and
+  // click the FAB. Only fires on the false -> true transition, so a user
+  // who deliberately closes the modal isn't forced straight back into it.
+  useEffect(() => {
+    if (needsSetup) {
+      setModalOpen(true);
+    }
+  }, [needsSetup]);
+
   if (!needsSetup) return null;
 
   return (
