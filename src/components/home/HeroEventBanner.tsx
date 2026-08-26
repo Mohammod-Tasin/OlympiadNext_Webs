@@ -14,7 +14,7 @@ function EventImage({ imagePath, imageAlt }: { imagePath: string; imageAlt: stri
 
   if (failed) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-3xl border border-black/5 bg-gradient-to-br from-olympiad-50 to-olympiad-100">
+      <div className="flex aspect-[1664/936] w-full items-center justify-center rounded-3xl border border-black/5 bg-gradient-to-br from-olympiad-50 to-olympiad-100">
         <svg viewBox="0 0 24 24" fill="none" className="h-16 w-16 text-olympiad-500/40" aria-hidden="true">
           <path
             d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 18.5v-13z"
@@ -34,7 +34,7 @@ function EventImage({ imagePath, imageAlt }: { imagePath: string; imageAlt: stri
       src={imagePath}
       alt={imageAlt}
       onError={() => setFailed(true)}
-      className="aspect-square w-full rounded-3xl border border-black/5 object-cover shadow-[0_20px_60px_rgb(0,0,0,0.1)]"
+      className="aspect-[1664/936] w-full rounded-3xl border border-black/5 object-cover shadow-[0_20px_60px_rgb(0,0,0,0.1)]"
     />
   );
 }

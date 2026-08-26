@@ -23,9 +23,9 @@ export const heroConfig: HeroEventConfig = {
   subjectTitle: "National Math Olympiad 2026",
   eventDate: "September 15, 2026 • 10:00 AM",
   description:
-    "Compete with the brightest young physicists in the country. Register your school and take on challenging, curriculum-aligned problems designed to sharpen real olympiad instincts.",
-  imagePath: "assets\math.svg",
-  imageAlt: "Illustration of a student preparing for the National Physics Olympiad",
+    "Compete with the brightest young mathematicians in the country. Register your school and take on challenging, curriculum-aligned problems designed to sharpen real olympiad instincts.",
+  imagePath: "/assets/math.svg",
+  imageAlt: "Illustration of a student preparing for the National Math Olympiad",
   registerButtonText: "Register Now",
   detailsButtonText: "See Details",
   registerHref: "/register",
