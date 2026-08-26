@@ -73,7 +73,12 @@ export function verifyOTP(type: "email" | "phone", code: string) {
   });
 }
 
-export function updateAcademicProfile(data: { institution_name: string; level: string; medium: string }) {
+export function updateAcademicProfile(data: {
+  full_name: string;
+  institution_name: string;
+  level: string;
+  medium: string;
+}) {
   return apiFetch<{ message: string }>("/api/auth/profile", {
     method: "PUT",
     body: data,

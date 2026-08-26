@@ -3,7 +3,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { ProfileSetupFAB } from "@/components/auth/ProfileSetupFAB";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,7 +23,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
-            <ProfileSetupFAB />
           </AuthProvider>
         </GoogleOAuthProvider>
       </body>

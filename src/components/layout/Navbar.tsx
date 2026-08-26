@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import { useAuth } from "@/lib/auth/useAuth";
 
 const NAV_LINKS = [
@@ -45,17 +46,20 @@ export function Navbar() {
           ))}
 
           {isAuthenticated ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
+            <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
                 className="text-sm font-medium text-olympiad-800 transition-colors hover:text-olympiad-500"
               >
                 Dashboard
               </Link>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                Logout
-              </Button>
+              <Link
+                href="/profile"
+                aria-label={`View profile${displayName ? ` for ${displayName}` : ""}`}
+                className="transition-opacity hover:opacity-80"
+              >
+                <Avatar name={displayName} size="sm" />
+              </Link>
             </div>
           ) : (
             <div className="flex items-center gap-3">
@@ -102,7 +106,14 @@ export function Navbar() {
 
             {isAuthenticated ? (
               <>
-                <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-3"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Avatar name={displayName} size="sm" />
+                  <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
+                </Link>
                 <Link
                   href="/dashboard"
                   className="text-sm font-medium text-olympiad-800"
