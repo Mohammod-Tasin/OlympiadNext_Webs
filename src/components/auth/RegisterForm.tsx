@@ -104,8 +104,8 @@ export function RegisterForm() {
               Select your level
             </option>
             {LEVEL_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
+              <option key={option.value} value={option.value}>
+                {option.label}
               </option>
             ))}
           </Select>

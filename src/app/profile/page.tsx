@@ -6,7 +6,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/lib/auth/useAuth";
 import { updateAcademicProfile } from "@/lib/api/authApi";
 import { ApiError } from "@/lib/api/client";
-import { LEVEL_OPTIONS, MEDIUM_OPTIONS } from "@/lib/constants/academic";
+import { LEVEL_OPTIONS, MEDIUM_OPTIONS, levelLabel } from "@/lib/constants/academic";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -113,8 +113,8 @@ function ProfileContent() {
                   Select your level
                 </option>
                 {LEVEL_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </Select>
@@ -152,7 +152,7 @@ function ProfileContent() {
               <ProfileField label="Email" value={user?.email} />
               <ProfileField label="Phone" value={user?.phone_number} />
               <ProfileField label="Institution" value={user?.institution_name} />
-              <ProfileField label="Level" value={user?.level} />
+              <ProfileField label="Level" value={levelLabel(user?.level)} />
               <ProfileField label="Medium" value={user?.medium} />
             </dl>
           )}
