@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/lib/auth/useAuth";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 
 interface HeroEventBannerProps {
@@ -46,6 +47,13 @@ function EventImage({ imagePath, imageAlt }: { imagePath: string; imageAlt: stri
 
 export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   const router = useRouter();
+  const { status } = useAuth();
+
+  // Logged-in users are presumably already registered - send them to the
+  // guidelines instead of back through the registration form.
+  function handleRegisterClick() {
+    router.push(status === "authenticated" ? config.detailsHref : config.registerHref);
+  }
 
   return (
     <section className="bg-gradient-to-b from-olympiad-50 to-white">
@@ -70,7 +78,7 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
           <p className="max-w-lg text-lg text-olympiad-800/80">{config.description}</p>
 
           <div className="mt-2 flex flex-col gap-4 sm:flex-row">
-            <Button variant="primary" size="lg" onClick={() => router.push(config.registerHref)}>
+            <Button variant="primary" size="lg" onClick={handleRegisterClick}>
               {config.registerButtonText}
             </Button>
             <Button variant="outline" size="lg" onClick={() => router.push(config.detailsHref)}>
