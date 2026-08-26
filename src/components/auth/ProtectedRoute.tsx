@@ -29,7 +29,11 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }, [status, needsOnboarding, router]);
 
   if (status !== "authenticated" || needsOnboarding) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center" role="status" aria-label="Loading">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-olympiad-500" />
+      </div>
+    );
   }
 
   return <>{children}</>;

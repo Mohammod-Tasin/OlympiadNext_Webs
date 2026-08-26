@@ -82,7 +82,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(me);
       setStatus("authenticated");
     } catch (err) {
-      clearSession();
+      // Only a genuine 401 means the session itself is invalid (and by
+      // this point apiFetch has already tried a silent refresh and lost).
+      // A network error, request timeout, or 5xx from a flaky backend
+      // doesn't mean the user is logged out - clearing the session on one
+      // of those would silently kick a caller like the onboarding page
+      // out mid-flow. Preserve `authenticated` status instead, so it stays
+      // mounted and the user can just retry.
+      if (err instanceof ApiError && err.status === 401) {
+        clearSession();
+      }
       throw err;
     }
   }, [clearSession]);
@@ -126,7 +135,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await syncIdentity();
       } catch {
-        // clearSession already ran inside syncIdentity's catch
+        // Unlike a later refreshUser() call failing mid-session (where
+        // syncIdentity now preserves `authenticated` on non-401 errors so
+        // the caller isn't kicked out), bootstrap has no prior authenticated
+        // state to preserve - it must still resolve `status` out of
+        // "loading" or the app spins forever on a flaky first request.
+        clearSession();
       }
     })();
 

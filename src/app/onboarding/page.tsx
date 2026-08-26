@@ -59,7 +59,7 @@ function OnboardingContent() {
 
   useEffect(() => {
     if (done) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [done, router]);
 
