@@ -3,13 +3,22 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { OtpInput } from "@/components/auth/OtpInput";
 import { useAuth } from "@/lib/auth/useAuth";
-import { sendOTP, updatePhoneNumber, verifyOTP } from "@/lib/api/authApi";
+import { sendOTP, updateAcademicProfile, updatePhoneNumber, verifyOTP } from "@/lib/api/authApi";
 import { ApiError } from "@/lib/api/client";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import type { User } from "@/types/auth";
 
-type Step = "phone" | "choose" | "code";
+type Step = "phone" | "choose" | "code" | "academic";
 type Target = "email" | "phone";
+
+const LEVEL_OPTIONS = [
+  "Junior (Class 6 - 8)",
+  "Secondary (Class 9 - 10)",
+  "Higher Secondary (Class 11 - 12 / HSC)",
+];
+const MEDIUM_OPTIONS = ["Bangla", "English"];
 
 interface ProfileSetupModalProps {
   open: boolean;
@@ -46,36 +55,55 @@ function VerifyRow({
   );
 }
 
+function startingStep(user: User | null): Step {
+  if (!user?.phone_number) return "phone";
+  const bothVerified = !!user.is_email_verified && !!user.is_phone_verified;
+  if (!bothVerified) return "choose";
+  const academicComplete = !!user.institution_name && !!user.level && !!user.medium;
+  return academicComplete ? "choose" : "academic";
+}
+
 export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
   const { user, refreshUser } = useAuth();
 
-  const [step, setStep] = useState<Step>(user?.phone_number ? "choose" : "phone");
+  const [step, setStep] = useState<Step>(() => startingStep(user));
   const [target, setTarget] = useState<Target | null>(null);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+  const [institutionName, setInstitutionName] = useState("");
+  const [level, setLevel] = useState("");
+  const [medium, setMedium] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const bothVerified = !!user?.is_email_verified && !!user?.is_phone_verified;
+  const academicComplete = !!user?.institution_name && !!user?.level && !!user?.medium;
 
   // Reset to a sensible starting step each time the modal is reopened.
   useEffect(() => {
     if (open) {
-      setStep(user?.phone_number ? "choose" : "phone");
+      setStep(startingStep(user));
       setTarget(null);
       setCode("");
+      setInstitutionName(user?.institution_name ?? "");
+      setLevel(user?.level ?? "");
+      setMedium(user?.medium ?? "");
       setError(null);
       setSubmitting(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Once both channels are verified, the modal has nothing left to do.
+  // Once both channels are verified, move on to the academic step if it's
+  // still missing; otherwise the modal has nothing left to do.
   useEffect(() => {
-    if (open && bothVerified) {
+    if (!open || !bothVerified) return;
+    if (!academicComplete) {
+      setStep("academic");
+    } else {
       onClose();
     }
-  }, [open, bothVerified, onClose]);
+  }, [open, bothVerified, academicComplete, onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -135,6 +163,21 @@ export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
     }
   }
 
+  async function handleSubmitAcademic(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await updateAcademicProfile({ institution_name: institutionName.trim(), level, medium });
+      await refreshUser();
+      onClose();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not save your academic profile");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -156,6 +199,7 @@ export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
               {step === "phone" && "Add a phone number to continue."}
               {step === "choose" && "Confirm your email and phone to finish setting up your account."}
               {step === "code" && target && `Enter the 6-digit code sent to your ${target}.`}
+              {step === "academic" && "Tell us about your academic background."}
             </p>
           </div>
           <button
@@ -238,6 +282,55 @@ export function ProfileSetupModal({ open, onClose }: ProfileSetupModalProps) {
                   Back
                 </button>
               </div>
+            </form>
+          )}
+
+          {step === "academic" && (
+            <form onSubmit={handleSubmitAcademic} className="flex flex-col gap-4">
+              <Input
+                id="institution"
+                label="Institution name"
+                type="text"
+                placeholder="e.g. Notre Dame College"
+                required
+                value={institutionName}
+                onChange={(e) => setInstitutionName(e.target.value)}
+              />
+              <Select
+                id="level"
+                label="Level"
+                required
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select your level
+                </option>
+                {LEVEL_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                id="medium"
+                label="Medium"
+                required
+                value={medium}
+                onChange={(e) => setMedium(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select your medium
+                </option>
+                {MEDIUM_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+              <Button type="submit" loading={submitting} className="w-full">
+                Complete Profile
+              </Button>
             </form>
           )}
         </div>

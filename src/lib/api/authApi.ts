@@ -63,3 +63,10 @@ export function verifyOTP(type: "email" | "phone", code: string) {
     body: { type, code },
   });
 }
+
+export function updateAcademicProfile(data: { institution_name: string; level: string; medium: string }) {
+  return apiFetch<{ message: string }>("/api/auth/profile", {
+    method: "PUT",
+    body: data,
+  });
+}

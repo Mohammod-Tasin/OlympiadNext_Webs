@@ -11,7 +11,14 @@ export function ProfileSetupFAB() {
   const [modalOpen, setModalOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
 
-  const needsSetup = status === "authenticated" && !!user && (!user.is_email_verified || !user.is_phone_verified);
+  const needsSetup =
+    status === "authenticated" &&
+    !!user &&
+    (!user.is_email_verified ||
+      !user.is_phone_verified ||
+      !user.institution_name ||
+      !user.level ||
+      !user.medium);
 
   useEffect(() => {
     if (!needsSetup) return;

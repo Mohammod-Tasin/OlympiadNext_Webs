@@ -4,6 +4,9 @@ export interface User {
   phone_number?: string;
   is_email_verified: boolean;
   is_phone_verified: boolean;
+  institution_name?: string;
+  level?: string;
+  medium?: string;
 }
 
 export interface AuthResponse {
