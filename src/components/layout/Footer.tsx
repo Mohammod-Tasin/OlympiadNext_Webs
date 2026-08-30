@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/common/BrandLogo";
 
 const QUICK_LINKS = [
   { href: "/", label: "Home" },
@@ -13,8 +14,9 @@ export function Footer() {
     <footer className="bg-olympiad-900 text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
         <div>
-          <h3 className="text-lg font-bold">OlympiadNext</h3>
-          <p className="mt-2 text-sm text-olympiad-50">
+          {/* Assets are dark navy, so sit them on a light chip against the dark footer. */}
+          <BrandLogo className="w-fit rounded-lg bg-white px-3 py-2" label="Shikhor home" />
+          <p className="mt-3 text-sm text-olympiad-50">
             Empowering students through competitive academic olympiads.
           </p>
         </div>
