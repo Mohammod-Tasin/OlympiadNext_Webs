@@ -16,7 +16,7 @@ function EventImage({ image, imageAlt }: { image: string; imageAlt: string }) {
 
   if (failed) {
     return (
-      <div className="aspect-[1664/936] w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 [backface-visibility:hidden]">
+      <div className="aspect-video w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 [backface-visibility:hidden]">
         <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-olympiad-50 to-olympiad-100">
           <svg viewBox="0 0 24 24" fill="none" className="h-16 w-16 text-olympiad-500/40" aria-hidden="true">
             <path
@@ -33,14 +33,14 @@ function EventImage({ image, imageAlt }: { image: string; imageAlt: string }) {
   }
 
   return (
-    <div className="aspect-[1664/936] w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 shadow-[0_20px_60px_rgb(0,0,0,0.1)] [backface-visibility:hidden]">
+    <div className="aspect-video w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 shadow-[0_20px_60px_rgb(0,0,0,0.1)] [backface-visibility:hidden]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={image}
         alt={imageAlt}
         onError={() => setFailed(true)}
         style={{ imageRendering: "-webkit-optimize-contrast" }}
-        className="h-full w-full object-cover"
+        className="h-full w-full rounded-2xl object-cover"
       />
     </div>
   );
