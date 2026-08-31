@@ -11,8 +11,8 @@ interface HeroEventBannerProps {
   config?: HeroEventConfig;
 }
 
-function EventImage({ imagePath, imageAlt }: { imagePath: string; imageAlt: string }) {
-  const [failed, setFailed] = useState(!imagePath);
+function EventImage({ image, imageAlt }: { image: string; imageAlt: string }) {
+  const [failed, setFailed] = useState(!image);
 
   if (failed) {
     return (
@@ -36,7 +36,7 @@ function EventImage({ imagePath, imageAlt }: { imagePath: string; imageAlt: stri
     <div className="aspect-[1664/936] w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 shadow-[0_20px_60px_rgb(0,0,0,0.1)] [backface-visibility:hidden]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={imagePath}
+        src={image}
         alt={imageAlt}
         onError={() => setFailed(true)}
         style={{ imageRendering: "-webkit-optimize-contrast" }}
@@ -65,7 +65,7 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
           </span>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-olympiad-900 sm:text-5xl">
-            {config.subjectTitle}
+            {config.title}
           </h1>
 
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-2 text-sm font-medium text-olympiad-800 shadow-[0_2px_10px_rgb(0,0,0,0.04)]">
@@ -95,7 +95,7 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
             className="absolute -inset-8 -z-10 rounded-[2.5rem] bg-olympiad-500/10 blur-2xl"
             aria-hidden="true"
           />
-          <EventImage imagePath={config.imagePath} imageAlt={config.imageAlt} />
+          <EventImage image={config.image} imageAlt={config.imageAlt} />
         </div>
       </div>
     </section>
