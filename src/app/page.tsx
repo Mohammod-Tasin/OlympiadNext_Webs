@@ -6,35 +6,30 @@ import { Timeline } from "@/components/home/Timeline";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 import { getActiveEvent, API_BASE_URL } from "@/lib/api/eventsApi";
 
+/** The timezone every event date is displayed in (UTC+6). */
+const EVENT_TIME_ZONE = "Asia/Dhaka";
+
 /**
- * Renders an ISO instant as e.g. "Sep 15, 2026 • 10:00 AM", using the
- * wall-clock time written in the string's own UTC offset rather than the
- * server's local timezone. We shift the instant by the parsed offset and
- * then format as UTC so the result is stable regardless of where it runs.
- * An unparseable value is returned unchanged rather than dropped.
+ * Formats an ISO 8601 instant for display in the event's timezone, e.g.
+ * "Sep 24, 2026 • 04:00 PM". `Intl` handles the offset conversion from the
+ * raw ISO string, so this is correct regardless of the server's own
+ * timezone. An unparseable value is returned unchanged rather than dropped.
  */
 function formatEventDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
 
-  const offsetMatch = iso.match(/([+-])(\d{2}):?(\d{2})$/);
-  const offsetMinutes = offsetMatch
-    ? (offsetMatch[1] === "-" ? -1 : 1) *
-      (Number(offsetMatch[2]) * 60 + Number(offsetMatch[3]))
-    : 0;
-  const shifted = new Date(date.getTime() + offsetMinutes * 60_000);
-
-  const datePart = shifted.toLocaleDateString("en-US", {
+  const datePart = date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-    timeZone: "UTC",
+    timeZone: EVENT_TIME_ZONE,
   });
-  const timePart = shifted.toLocaleTimeString("en-US", {
-    hour: "numeric",
+  const timePart = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-    timeZone: "UTC",
+    timeZone: EVENT_TIME_ZONE,
   });
   return `${datePart} • ${timePart}`;
 }
