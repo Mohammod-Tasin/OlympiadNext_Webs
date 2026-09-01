@@ -28,8 +28,8 @@ export const heroConfig: HeroEventConfig = {
   eventDate: "Sep 15, 2026 • 10:00 AM",
   eventDateISO: "2026-09-15T10:00:00+06:00",
   description:
-    "Compete with the brightest young mathematicians in the country. Register your school and take on challenging, curriculum-aligned problems designed to sharpen real olympiad instincts.",
-  image: "/assets/math.svg",
+    "Compete with the brightest young science enthusiasts in the country. Register your school and take on challenging, curriculum-aligned problems designed to sharpen real olympiad instincts.",
+  image: "/assets/landing_bg.svg",
   imageAlt: "Illustration of a student preparing for the National Math Olympiad",
   registerButtonText: "Register Now",
   detailsButtonText: "See Details",
