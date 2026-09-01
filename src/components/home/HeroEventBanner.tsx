@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
@@ -11,41 +10,14 @@ interface HeroEventBannerProps {
   config?: HeroEventConfig;
 }
 
-function EventImage({ image, imageAlt }: { image: string; imageAlt: string }) {
-  const [failed, setFailed] = useState(!image);
-
-  if (failed) {
-    return (
-      <div className="aspect-video w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 [backface-visibility:hidden]">
-        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-olympiad-50 to-olympiad-100">
-          <svg viewBox="0 0 24 24" fill="none" className="h-16 w-16 text-olympiad-500/40" aria-hidden="true">
-            <path
-              d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 18.5v-13z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path d="M4 16l4.5-4.5a1.5 1.5 0 012.12 0L15 15.9m-1.5-1.4l1.38-1.38a1.5 1.5 0 012.12 0L20 15.9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="9" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.5" />
-          </svg>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="aspect-video w-full transform-gpu overflow-hidden rounded-3xl border border-black/5 shadow-[0_20px_60px_rgb(0,0,0,0.1)] [backface-visibility:hidden]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={image}
-        alt={imageAlt}
-        onError={() => setFailed(true)}
-        style={{ imageRendering: "-webkit-optimize-contrast" }}
-        className="h-full w-full rounded-2xl object-cover"
-      />
-    </div>
-  );
-}
-
+/**
+ * Immersive full-bleed hero: the event illustration fills the entire
+ * section as a CSS background, and all copy sits in a right-hand column
+ * over a left-to-right "clear image → frosted white" readability gradient.
+ * On < lg the layout collapses to a centred stack with a bottom-weighted
+ * white wash instead, so the text stays legible when it overlaps the
+ * busier middle of the image.
+ */
 export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   const router = useRouter();
   const { status } = useAuth();
@@ -57,18 +29,32 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   }
 
   return (
-    <section className="bg-gradient-to-b from-olympiad-50 to-white">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:py-28">
-        <div className="flex flex-col gap-6">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500">
+    <section
+      className="relative w-full min-h-[max(90vh,800px)] overflow-hidden"
+      style={{
+        backgroundImage: `url(${config.image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Readability wash. Mobile: bottom-heavy vertical fade. lg+: image
+          stays clear on the left, text column sits on near-solid white. */}
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/80 to-white/40 lg:bg-gradient-to-r lg:from-transparent lg:via-white/40 lg:to-white/95"
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 mx-auto flex min-h-[max(90vh,800px)] max-w-7xl items-center justify-center px-4 py-20 sm:px-6 lg:justify-end">
+        <div className="flex w-full flex-col items-center gap-6 text-center lg:w-1/2 lg:items-end lg:text-right">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500 backdrop-blur-sm">
             Upcoming Event
           </span>
 
-          <h1 className="text-4xl font-extrabold tracking-tight text-olympiad-900 sm:text-5xl">
+          <h1 className="max-w-xl text-4xl font-extrabold tracking-tight text-olympiad-900 sm:text-5xl lg:text-6xl">
             {config.title}
           </h1>
 
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-2 text-sm font-medium text-olympiad-800 shadow-[0_2px_10px_rgb(0,0,0,0.04)]">
+          <div className="inline-flex w-fit items-center justify-end gap-2 rounded-full border border-black/5 bg-white/90 px-4 py-2 text-sm font-medium text-olympiad-800 shadow-[0_2px_10px_rgb(0,0,0,0.04)] backdrop-blur-sm">
             <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0 text-olympiad-500" aria-hidden="true">
               <rect x="3.5" y="5" width="17" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
               <path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -76,11 +62,14 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
             {config.eventDate}
           </div>
 
-          <CountdownTimer targetDate={config.eventDateISO} />
+          <CountdownTimer
+            targetDate={config.eventDateISO}
+            className="justify-center lg:justify-end"
+          />
 
           <p className="max-w-lg text-lg text-olympiad-800/80">{config.description}</p>
 
-          <div className="mt-2 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-2 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center sm:gap-4 lg:justify-end">
             <Button variant="primary" size="lg" onClick={handleRegisterClick}>
               {config.registerButtonText}
             </Button>
@@ -88,14 +77,6 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
               {config.detailsButtonText}
             </Button>
           </div>
-        </div>
-
-        <div className="relative">
-          <div
-            className="absolute -inset-8 -z-10 rounded-[2.5rem] bg-olympiad-500/10 blur-2xl"
-            aria-hidden="true"
-          />
-          <EventImage image={config.image} imageAlt={config.imageAlt} />
         </div>
       </div>
     </section>
