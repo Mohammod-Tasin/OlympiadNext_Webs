@@ -34,7 +34,9 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
       style={{
         backgroundImage: `url(${config.image})`,
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        // Bias toward the upper-left so the Newton's cradle sits higher on
+        // screen and the top of the artwork is cropped.
+        backgroundPosition: "left 35%",
       }}
     >
       {/* Readability wash. Mobile: bottom-heavy vertical fade. lg+: image
@@ -45,7 +47,9 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
       />
 
       <div className="relative z-10 mx-auto flex min-h-[max(90vh,800px)] max-w-7xl items-center justify-center px-4 py-20 sm:px-6 lg:justify-end">
-        <div className="flex w-full flex-col items-center gap-6 text-center lg:w-1/2 lg:items-end lg:text-right">
+        {/* Negative top margin lifts the block above dead-centre so it lines
+            up horizontally with the Newton's cradle in the artwork. */}
+        <div className="-mt-12 flex w-full flex-col items-center gap-6 text-center lg:-mt-20 lg:w-1/2 lg:items-end lg:text-right">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500 backdrop-blur-sm">
             Upcoming Event
           </span>
