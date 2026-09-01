@@ -10,9 +10,8 @@
  * from cache and picks up event changes within a minute.
  */
 
-/** Base URL of the Go backend. Exported so pages can resolve relative
- * asset paths (e.g. `/uploads/...`) that the API returns. */
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+/** Base URL of the Go backend. */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 /** A single event as returned by `GET /api/client/events`. */
 export interface ActiveEvent {

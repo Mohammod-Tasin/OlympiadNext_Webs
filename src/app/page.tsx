@@ -4,7 +4,7 @@ import { NoticeBoard } from "@/components/home/NoticeBoard";
 import { HowToParticipate } from "@/components/home/HowToParticipate";
 import { Timeline } from "@/components/home/Timeline";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
-import { getActiveEvent, API_BASE_URL } from "@/lib/api/eventsApi";
+import { getActiveEvent } from "@/lib/api/eventsApi";
 
 /** The timezone every event date is displayed in (UTC+6). */
 const EVENT_TIME_ZONE = "Asia/Dhaka";
@@ -34,22 +34,12 @@ function formatEventDate(iso: string): string {
   return `${datePart} • ${timePart}`;
 }
 
-/**
- * Uploaded event images come back as backend-relative paths (`/uploads/...`).
- * Prepend the API origin so the browser fetches them from the Go backend
- * rather than from the Next.js app's own origin. Absolute URLs and bundled
- * assets under `/assets/...` are left untouched.
- */
-function resolveImageUrl(url: string): string {
-  return url.startsWith("/uploads/") ? `${API_BASE_URL}${url}` : url;
-}
-
 export default async function HomePage() {
   const event = await getActiveEvent();
 
-  // Live event data wins outright. The static heroConfig only supplies the
-  // fields the API does not return (button copy + links); when there is no
-  // active event it stands in entirely.
+  // The API drives the event's text and dates; the hero image is always the
+  // bundled static asset (backend image uploads were removed). When there is
+  // no active event, heroConfig stands in entirely.
   let config: HeroEventConfig = heroConfig;
   if (event) {
     config = {
@@ -61,8 +51,8 @@ export default async function HomePage() {
       // falls back to the static date.
       eventDateISO: event.event_date,
       eventDate: formatEventDate(event.event_date),
-      image: resolveImageUrl(event.image_url) || heroConfig.image,
-      imageAlt: event.title,
+      image: heroConfig.image,
+      imageAlt: heroConfig.imageAlt,
     };
   }
 
