@@ -7,8 +7,10 @@ import type { User } from "@/types/auth";
 
 const ONBOARDING_PATH = "/onboarding";
 
+// Email verification is now enforced before login/registration completes, so
+// an authenticated user only lacks their academic details.
 function isProfileIncomplete(user: User | null): boolean {
-  return !user || !user.full_name || !user.institution_name || !user.is_phone_verified || !user.is_email_verified;
+  return !user || !user.full_name || !user.institution_name || !user.level || !user.medium;
 }
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {

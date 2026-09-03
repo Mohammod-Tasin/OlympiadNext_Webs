@@ -11,9 +11,14 @@ export interface RegisterData {
   medium: string;
 }
 
+/**
+ * Registration no longer establishes a session: the backend creates the
+ * account, emails a 6-digit OTP, and the user must verify it (see
+ * `verifyEmailOTP`) before `login` will issue tokens.
+ */
 export async function register(data: RegisterData) {
   const device_fingerprint = await getDeviceFingerprint();
-  return apiFetch<AuthResponse>("/api/auth/register", {
+  return apiFetch<{ message: string }>("/api/auth/register", {
     method: "POST",
     body: { ...data, device_fingerprint },
     skipAuth: true,
@@ -52,24 +57,23 @@ export function me() {
   return apiFetch<User>("/api/auth/me");
 }
 
-export function updatePhoneNumber(phone_number: string) {
-  return apiFetch<{ message: string }>("/api/auth/update-phone", {
-    method: "POST",
-    body: { phone_number },
-  });
-}
-
-export function sendOTP(type: "email" | "phone") {
+/** (Re)sends the email verification OTP. Runs before a session exists, so
+ * the target email is passed explicitly rather than read from the token. */
+export function sendEmailOTP(email: string) {
   return apiFetch<{ message: string }>("/api/auth/send-otp", {
     method: "POST",
-    body: { type },
+    body: { email },
+    skipAuth: true,
   });
 }
 
-export function verifyOTP(type: "email" | "phone", code: string) {
+/** Confirms the 6-digit code emailed during registration. On success the
+ * account is marked verified and `login` will start issuing tokens. */
+export function verifyEmailOTP(email: string, otp: string) {
   return apiFetch<{ message: string }>("/api/auth/verify-otp", {
     method: "POST",
-    body: { type, code },
+    body: { email, otp },
+    skipAuth: true,
   });
 }
 

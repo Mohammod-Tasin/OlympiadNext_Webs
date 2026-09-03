@@ -150,7 +150,6 @@ function ProfileContent() {
             <dl className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <ProfileField label="Full name" value={user?.full_name} />
               <ProfileField label="Email" value={user?.email} />
-              <ProfileField label="Phone" value={user?.phone_number} />
               <ProfileField label="Institution" value={user?.institution_name} />
               <ProfileField label="Level" value={levelLabel(user?.level)} />
               <ProfileField label="Medium" value={user?.medium} />

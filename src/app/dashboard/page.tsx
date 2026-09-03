@@ -151,7 +151,6 @@ function DashboardContent() {
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                 <InfoRow label="Email" value={user?.email} verified={user?.is_email_verified} />
-                <InfoRow label="Phone" value={user?.phone_number} verified={user?.is_phone_verified} />
                 <InfoRow label="Institution" value={user?.institution_name} />
                 <InfoRow label="Level" value={levelLabel(user?.level)} />
               </CardContent>

@@ -11,6 +11,8 @@ interface AuthContextValue {
   user: User | null;
   accessToken: string | null;
   login: (email: string, password: string) => Promise<void>;
+  /** Creates the account and triggers the email OTP. Does not sign the user
+   * in — they must verify their email, then log in. */
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -177,13 +179,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applySession],
   );
 
-  const register = useCallback(
-    async (data: RegisterData) => {
-      const res = await authApi.register(data);
-      await applySession(res.access_token, res.access_token_expires_at);
-    },
-    [applySession],
-  );
+  const register = useCallback(async (data: RegisterData) => {
+    await authApi.register(data);
+  }, []);
 
   const loginWithGoogle = useCallback(
     async (idToken: string) => {
