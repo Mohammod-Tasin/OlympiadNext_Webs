@@ -5,6 +5,12 @@ node_modules/
 .next/
 out/
 
+# TypeScript incremental build cache (regenerated on every build; must not be committed)
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+
 # environment variables
 .env*.local
 .env

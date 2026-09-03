@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { useAuth } from "@/lib/auth/useAuth";
 
 const NAV_LINKS = [
@@ -30,9 +31,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-white/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="text-lg font-bold text-olympiad-900">
-          OlympiadNext
-        </Link>
+        <BrandLogo />
 
         <div className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
