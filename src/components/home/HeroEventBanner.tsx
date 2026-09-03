@@ -42,11 +42,15 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Readability wash. < lg: a flat mute so the frosted card carries the
-          contrast. lg+: image stays clear on the left, text column lands on
-          near-solid white. */}
+      {/* Desktop-only readability gradient. The whole left half is fully
+          transparent (via-white/0 sits at 50%), so the Newton's cradle keeps
+          100% of the source image's clarity; only the right half ramps up to
+          near-solid white behind the text column. `white/0` rather than
+          `transparent` avoids CSS's transparent-black fade tinting the ramp.
+          On < lg there is no wash at all — the frosted content card carries
+          the text contrast on its own. */}
       <div
-        className="absolute inset-0 bg-white/40 lg:bg-gradient-to-r lg:from-transparent lg:via-white/50 lg:to-white/95"
+        className="absolute inset-0 hidden bg-gradient-to-r from-white/0 via-white/0 to-white/95 lg:block"
         aria-hidden="true"
       />
 
