@@ -58,7 +58,7 @@ export function me() {
 /** (Re)sends the email verification OTP. Runs before a session exists, so
  * the target email is passed explicitly rather than read from the token. */
 export function sendEmailOTP(email: string) {
-  return apiFetch<{ message: string }>("/api/auth/send-otp", {
+  return apiFetch<{ message: string }>("/api/auth/resend-email-otp", {
     method: "POST",
     body: { email },
     skipAuth: true,
@@ -68,7 +68,7 @@ export function sendEmailOTP(email: string) {
 /** Confirms the 6-digit code emailed during registration. On success the
  * account is marked verified and `login` will start issuing tokens. */
 export function verifyEmailOTP(email: string, otp: string) {
-  return apiFetch<{ message: string }>("/api/auth/verify-otp", {
+  return apiFetch<{ message: string }>("/api/auth/verify-email-otp", {
     method: "POST",
     body: { email, otp },
     skipAuth: true,
