@@ -24,19 +24,33 @@ export function RegisterForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ password?: string; confirmPassword?: string }>({});
 
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  /** Field-level checks: password length + exact confirm-password match.
+   * Returns the errors so `handleRegister` can gate submission on them. */
+  function validatePasswords() {
+    const errors: { password?: string; confirmPassword?: string } = {};
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+    }
+    if (confirmPassword !== password) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+    return errors;
+  }
+
   async function handleRegister(e: FormEvent) {
     e.preventDefault();
     setError(null);
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
-      return;
-    }
+    const errors = validatePasswords();
+    setFieldErrors(errors);
+    if (errors.password || errors.confirmPassword) return;
 
     setSubmitting(true);
     try {
@@ -153,9 +167,30 @@ export function RegisterForm() {
             label="Password"
             type="password"
             required
-            minLength={MIN_PASSWORD_LENGTH}
+            autoComplete="new-password"
+            // Length is enforced by validatePasswords() so the failure shows as
+            // an inline error, consistent with the confirm-password check —
+            // rather than a browser tooltip from a native `minLength`.
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            error={fieldErrors.password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setFieldErrors({});
+            }}
+          />
+
+          <Input
+            id="confirm-password"
+            label="Confirm password"
+            type="password"
+            required
+            autoComplete="new-password"
+            value={confirmPassword}
+            error={fieldErrors.confirmPassword}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+            }}
           />
 
           <p className="text-xs text-olympiad-800/60">
