@@ -52,19 +52,25 @@ export function refreshOnce(): Promise<string | null> {
 
 interface FetchOptions {
   method?: string;
+  /** A plain object is JSON-encoded; a `FormData` is sent as-is so the
+   * browser can set the multipart `Content-Type` boundary itself. */
   body?: unknown;
   /** Skip attaching the access token and skip 401 retry — for endpoints
    * that run before a session exists (login, register, refresh, logout). */
   skipAuth?: boolean;
+  /** Override the default request timeout — e.g. a longer window for file
+   * uploads. */
+  timeoutMs?: number;
 }
 
 const REQUEST_TIMEOUT_MS = 12_000;
 
 async function doFetch(path: string, options: FetchOptions, token: string | null): Promise<Response> {
   const deviceFingerprint = await getDeviceFingerprint();
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? REQUEST_TIMEOUT_MS);
 
   try {
     return await fetch(`${API_URL}${path}`, {
@@ -72,11 +78,12 @@ async function doFetch(path: string, options: FetchOptions, token: string | null
       credentials: "include",
       signal: controller.signal,
       headers: {
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        // FormData sets its own multipart Content-Type (with boundary).
+        ...(options.body && !isFormData ? { "Content-Type": "application/json" } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(deviceFingerprint ? { "X-Device-Fingerprint": deviceFingerprint } : {}),
       },
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      body: options.body ? (isFormData ? (options.body as FormData) : JSON.stringify(options.body)) : undefined,
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {

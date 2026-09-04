@@ -8,11 +8,9 @@ import { ApiError } from "@/lib/api/client";
 import { sendEmailOTP, verifyEmailOTP } from "@/lib/api/authApi";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { OtpInput } from "./OtpInput";
 import { GoogleSignInButton } from "./GoogleSignInButton";
-import { LEVEL_OPTIONS, MEDIUM_OPTIONS } from "@/lib/constants/academic";
 
 const MIN_PASSWORD_LENGTH = 8;
 const OTP_LENGTH = 6;
@@ -27,9 +25,6 @@ export function RegisterForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [institutionName, setInstitutionName] = useState("");
-  const [level, setLevel] = useState("");
-  const [medium, setMedium] = useState("");
 
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -50,9 +45,6 @@ export function RegisterForm() {
         email: email.trim(),
         password,
         full_name: fullName.trim(),
-        institution_name: institutionName.trim(),
-        level,
-        medium,
       });
       setOtp("");
       setStep("otp");
@@ -177,36 +169,9 @@ export function RegisterForm() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Input
-            id="institution"
-            label="Institution name"
-            type="text"
-            required
-            value={institutionName}
-            onChange={(e) => setInstitutionName(e.target.value)}
-          />
-
-          <Select id="level" label="Level" required value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option value="" disabled>
-              Select your level
-            </option>
-            {LEVEL_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-
-          <Select id="medium" label="Medium" required value={medium} onChange={(e) => setMedium(e.target.value)}>
-            <option value="" disabled>
-              Select your medium
-            </option>
-            {MEDIUM_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Select>
+          <p className="text-xs text-olympiad-800/60">
+            You&apos;ll add your institution and academic details after verifying your email.
+          </p>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 

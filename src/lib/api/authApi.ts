@@ -6,15 +6,13 @@ export interface RegisterData {
   email: string;
   password: string;
   full_name: string;
-  institution_name: string;
-  level: string;
-  medium: string;
 }
 
 /**
- * Registration no longer establishes a session: the backend creates the
- * account, emails a 6-digit OTP, and the user must verify it (see
- * `verifyEmailOTP`) before `login` will issue tokens.
+ * Registration takes only email, password and name; academic details and
+ * the verification document are collected later in onboarding. It does not
+ * establish a session — the backend emails a 6-digit OTP that the user must
+ * verify (see `verifyEmailOTP`) before `login` will issue tokens.
  */
 export async function register(data: RegisterData) {
   const device_fingerprint = await getDeviceFingerprint();
