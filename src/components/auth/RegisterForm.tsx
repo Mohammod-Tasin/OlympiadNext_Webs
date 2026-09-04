@@ -22,7 +22,6 @@ export function RegisterForm() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("form");
 
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -44,7 +43,6 @@ export function RegisterForm() {
       await register({
         email: email.trim(),
         password,
-        full_name: fullName.trim(),
       });
       setOtp("");
       setStep("otp");
@@ -142,15 +140,6 @@ export function RegisterForm() {
       <CardContent>
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
           <Input
-            id="full-name"
-            label="Full name"
-            type="text"
-            required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-
-          <Input
             id="email"
             label="Email"
             type="email"
@@ -170,7 +159,7 @@ export function RegisterForm() {
           />
 
           <p className="text-xs text-olympiad-800/60">
-            You&apos;ll add your institution and academic details after verifying your email.
+            You&apos;ll add your name, institution and academic details after verifying your email.
           </p>
 
           {error && <p className="text-sm text-red-600">{error}</p>}

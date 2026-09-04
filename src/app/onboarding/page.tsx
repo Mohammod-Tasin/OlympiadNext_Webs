@@ -31,11 +31,13 @@ function validateFile(file: File, accept: string): string | null {
   return null;
 }
 
-// The user has finished onboarding once the academic fields are set and the
-// account has left the `unverified` state (i.e. the document was submitted).
+// The user has finished onboarding once name + academic fields are set and
+// the account has left the `unverified` state (i.e. the document was
+// submitted). Mirrors ProtectedRoute's `needsOnboarding` check.
 function onboardingComplete(user: User | null): boolean {
   return Boolean(
-    user?.institution_name &&
+    user?.full_name &&
+      user?.institution_name &&
       user?.level &&
       user?.medium &&
       user?.verification_status &&
@@ -47,6 +49,7 @@ function OnboardingContent() {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
 
+  const [fullName, setFullName] = useState(user?.full_name ?? "");
   const [institutionName, setInstitutionName] = useState(user?.institution_name ?? "");
   const [level, setLevel] = useState(user?.level ?? "");
   const [medium, setMedium] = useState(user?.medium ?? "");
@@ -101,6 +104,7 @@ function OnboardingContent() {
       const picture = profilePicture ? await uploadUserFile(profilePicture) : null;
 
       await updateUserProfile({
+        full_name: fullName.trim(),
         institution_name: institutionName.trim(),
         level,
         medium,
@@ -131,6 +135,15 @@ function OnboardingContent() {
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+            <Input
+              id="full-name"
+              label="Full name [পূর্ণ নাম]"
+              type="text"
+              required
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+
             <Input
               id="institution"
               label="Institution name [প্রতিষ্ঠানের নাম]"
