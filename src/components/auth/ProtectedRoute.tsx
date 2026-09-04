@@ -14,7 +14,7 @@ const ONBOARDING_PATH = "/onboarding";
 function needsOnboarding(user: User | null): boolean {
   if (!user) return true;
   const missingDetails = !user.full_name || !user.institution_name || !user.level || !user.medium;
-  return missingDetails || user.status === "unverified";
+  return missingDetails || user.verification_status === "unverified";
 }
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {

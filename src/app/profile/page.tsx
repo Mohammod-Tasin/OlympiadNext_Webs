@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/lib/auth/useAuth";
-import { updateAcademicProfile } from "@/lib/api/authApi";
+import { updateUserProfile } from "@/lib/api/userApi";
 import { ApiError } from "@/lib/api/client";
 import { LEVEL_OPTIONS, MEDIUM_OPTIONS, levelLabel } from "@/lib/constants/academic";
 import { Avatar } from "@/components/ui/Avatar";
@@ -48,7 +48,7 @@ function ProfileContent() {
     setError(null);
     setSubmitting(true);
     try {
-      await updateAcademicProfile({
+      await updateUserProfile({
         full_name: fullName.trim(),
         institution_name: institutionName.trim(),
         level,

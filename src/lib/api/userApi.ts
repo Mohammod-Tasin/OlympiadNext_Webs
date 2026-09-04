@@ -27,18 +27,22 @@ export async function uploadUserFile(file: File): Promise<UploadedFile> {
 }
 
 export interface UserProfileUpdate {
-  institution_name: string;
-  level: string;
-  medium: string;
-  /** URL returned by `uploadUserFile` — required. */
-  verification_doc: string;
+  full_name?: string;
+  institution_name?: string;
+  level?: string;
+  medium?: string;
+  /** URL returned by `uploadUserFile`. Sent during onboarding; omitted on
+   * later profile edits that only touch the academic fields. */
+  verification_doc?: string;
   /** URL returned by `uploadUserFile` — optional. */
   profile_picture?: string;
 }
 
 /**
- * Submits the onboarding profile. On success the account moves to `pending`
- * review: the user can browse the site freely, but exam entry stays gated
+ * Updates the user's profile via `PUT /api/user/profile`. Used both by
+ * onboarding (with the verification document) and by the profile settings
+ * page (academic fields only). On first submission the account moves to
+ * `pending` review: the user browses freely, but exam entry stays gated
  * until an admin marks them `verified`.
  */
 export function updateUserProfile(data: UserProfileUpdate) {

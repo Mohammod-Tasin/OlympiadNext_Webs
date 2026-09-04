@@ -74,15 +74,3 @@ export function verifyEmailOTP(email: string, otp: string) {
     skipAuth: true,
   });
 }
-
-export function updateAcademicProfile(data: {
-  full_name: string;
-  institution_name: string;
-  level: string;
-  medium: string;
-}) {
-  return apiFetch<{ message: string }>("/api/auth/profile", {
-    method: "PUT",
-    body: data,
-  });
-}

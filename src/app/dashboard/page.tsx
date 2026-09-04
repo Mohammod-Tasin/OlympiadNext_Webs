@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { levelLabel } from "@/lib/constants/academic";
 import { cn } from "@/lib/utils/cn";
+import type { VerificationStatus } from "@/types/auth";
 
 const SIDEBAR_LINKS: Array<{ href: string; label: string; icon: ReactNode }> = [
   {
@@ -60,6 +61,33 @@ const SIDEBAR_LINKS: Array<{ href: string; label: string; icon: ReactNode }> = [
     ),
   },
 ];
+
+/** KYC status pill. Renders nothing until the account reaches `pending`
+ * (an `unverified` user is redirected to onboarding before this view). */
+function VerificationBadge({ status }: { status?: VerificationStatus }) {
+  if (status === "pending") {
+    return (
+      <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1.5 text-sm font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Verification Pending (অপেক্ষমান)
+      </span>
+    );
+  }
+  if (status === "verified") {
+    return (
+      <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+          <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Verified (ভেরিফাইড)
+      </span>
+    );
+  }
+  return null;
+}
 
 function InfoRow({ label, value, verified }: { label: string; value?: string; verified?: boolean }) {
   return (
@@ -140,6 +168,12 @@ function DashboardContent() {
           </span>
           <h1 className="mt-3 text-2xl font-bold text-olympiad-900 sm:text-3xl">Welcome back, {displayName}</h1>
           <p className="mt-1 text-sm text-olympiad-800/70">Here&apos;s what&apos;s happening with your account.</p>
+
+          {(user?.verification_status === "pending" || user?.verification_status === "verified") && (
+            <div className="mt-4">
+              <VerificationBadge status={user.verification_status} />
+            </div>
+          )}
 
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <Card className="lg:col-span-2">

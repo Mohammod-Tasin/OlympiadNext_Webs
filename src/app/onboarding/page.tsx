@@ -38,8 +38,8 @@ function onboardingComplete(user: User | null): boolean {
     user?.institution_name &&
       user?.level &&
       user?.medium &&
-      user?.status &&
-      user.status !== "unverified",
+      user?.verification_status &&
+      user.verification_status !== "unverified",
   );
 }
 

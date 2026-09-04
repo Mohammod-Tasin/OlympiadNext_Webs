@@ -1,18 +1,18 @@
 /**
- * Account verification state:
+ * KYC / account verification state:
  * - `unverified` — onboarding not submitted yet (forced to /onboarding)
  * - `pending`    — onboarding submitted, awaiting admin review (full browsing,
  *                  exam entry still gated)
  * - `verified`   — approved
  */
-export type UserStatus = "unverified" | "pending" | "verified";
+export type VerificationStatus = "unverified" | "pending" | "verified";
 
 export interface User {
   user_id: string;
   email: string;
   full_name?: string;
   is_email_verified: boolean;
-  status?: UserStatus;
+  verification_status?: VerificationStatus;
   institution_name?: string;
   level?: string;
   medium?: string;
