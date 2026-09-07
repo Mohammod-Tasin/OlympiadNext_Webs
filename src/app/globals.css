@@ -40,7 +40,11 @@ body {
 }
 
 .page-center {
-  min-height: 100vh;
+  /* Fill the space below the 4rem navbar, not the whole viewport — the
+     latter (plus the navbar and footer) forced a scrollbar on every auth
+     page even when the form was short. Matches the calc(100vh - 4rem)
+     pattern used elsewhere (onboarding, hero). */
+  min-height: calc(100vh - 4rem);
   display: flex;
   align-items: center;
   justify-content: center;

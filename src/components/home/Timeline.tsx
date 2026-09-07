@@ -8,7 +8,7 @@ const EVENTS = [
 export function Timeline() {
   return (
     <section className="bg-olympiad-50">
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
         <h2 className="text-center text-2xl font-bold text-olympiad-900 sm:text-3xl">Important Dates</h2>
         <ol className="mt-10 flex flex-col gap-10 border-l-2 border-olympiad-300 pl-6">
           {EVENTS.map((event) => (

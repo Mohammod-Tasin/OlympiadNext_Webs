@@ -208,7 +208,7 @@ function DashboardContent() {
               </div>
             </div>
 
-            <nav className="flex gap-1 overflow-x-auto p-3 md:flex-col md:overflow-visible">
+            <nav className="flex flex-wrap gap-1 p-3 md:flex-col">
               {SIDEBAR_LINKS.map((link) => {
                 const active = pathname === link.href;
                 return (
@@ -293,7 +293,7 @@ function DashboardContent() {
               <CardHeader>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Quick Actions</h2>
               </CardHeader>
-              <CardContent className="flex flex-col gap-3 sm:flex-row">
+              <CardContent className="flex flex-col gap-3 lg:flex-row">
                 <Button variant="primary" size="sm" className="flex-1">
                   Download Admit Card
                 </Button>

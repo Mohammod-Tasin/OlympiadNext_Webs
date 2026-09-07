@@ -50,21 +50,23 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
         style={{ objectPosition: "10% 50%" }}
       />
 
-      {/* Desktop-only readability gradient. The whole left half is fully
-          transparent (via-white/0 sits at 50%), so the Newton's cradle keeps
-          100% of the source image's clarity; only the right half ramps up to
-          near-solid white behind the text column. `white/0` rather than
-          `transparent` avoids CSS's transparent-black fade tinting the ramp.
-          On < lg there is no wash at all — the frosted content card carries
-          the text contrast on its own. */}
-      <div
-        className="absolute inset-0 hidden bg-gradient-to-r from-white/0 via-white/0 to-white/95 lg:block"
-        aria-hidden="true"
-      />
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-center px-4 py-16 sm:px-6">
+        {/* Desktop-only readability gradient. Anchored to the max-w-6xl
+            content zone (plus a 10rem bleed past its right edge) rather than
+            spanning the full-bleed section: the white plateau sits behind the
+            copy and then fades back to transparent in the margin, so on very
+            wide screens the artwork fills both sides instead of the copy
+            floating against an empty white slab — and there is no hard seam
+            where the wash would otherwise meet the image. The left ~45% stays
+            fully transparent so the Newton's cradle reads at full clarity. On
+            < lg there is no wash — the frosted card carries contrast. */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 -right-40 hidden bg-[linear-gradient(to_right,rgba(255,255,255,0),rgba(255,255,255,0)_45%,rgba(255,255,255,0.95)_76%,rgba(255,255,255,0.95)_88%,rgba(255,255,255,0))] lg:block"
+          aria-hidden="true"
+        />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col justify-center px-6 py-16 lg:px-8">
         {/* Positioning wrapper: dead-centre vertically, right half on lg+. */}
-        <div className="flex flex-col items-center lg:ml-auto lg:w-1/2 lg:items-end">
+        <div className="relative flex flex-col items-center lg:ml-auto lg:w-1/2 lg:items-end">
           {/* Content card: frosted panel on mobile, dissolves to bare copy on lg+. */}
           <div className="flex w-full max-w-xl flex-col items-center gap-6 rounded-[2rem] bg-white/75 px-6 py-9 text-center shadow-[0_16px_50px_rgb(15,23,42,0.12)] ring-1 ring-white/60 backdrop-blur-xl lg:max-w-none lg:items-end lg:rounded-none lg:bg-transparent lg:p-0 lg:text-right lg:shadow-none lg:ring-0 lg:backdrop-blur-none">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-medal-500/30 bg-medal-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-medal-700 backdrop-blur-sm">
