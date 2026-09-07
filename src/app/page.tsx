@@ -1,5 +1,5 @@
 import { HeroEventBanner } from "@/components/home/HeroEventBanner";
-import { StatsSection } from "@/components/home/StatsSection";
+import { AboutShikhor } from "@/components/home/AboutShikhor";
 import { NoticeBoard } from "@/components/home/NoticeBoard";
 import { HowToParticipate } from "@/components/home/HowToParticipate";
 import { Timeline } from "@/components/home/Timeline";
@@ -59,7 +59,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <HeroEventBanner config={config} />
-      <StatsSection />
+      <AboutShikhor />
       <NoticeBoard />
       <HowToParticipate />
       <Timeline />
