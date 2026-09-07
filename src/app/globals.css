@@ -1,22 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-olympiad-50: #c1e8ff;
+  --color-olympiad-50: #eef2f8;
+  --color-olympiad-100: #dbe4f0;
+  --color-olympiad-200: #becfe4;
   --color-olympiad-300: #7da0ca;
+  --color-olympiad-400: #6a93bf;
   --color-olympiad-500: #5483b3;
+  --color-olympiad-600: #3f6a97;
+  --color-olympiad-700: #23477a;
   --color-olympiad-800: #052659;
   --color-olympiad-900: #021024;
+
+  --color-medal-50: #fbf3dd;
+  --color-medal-500: #c08a2d;
+  --color-medal-700: #8a5f16;
 }
 
 :root {
   color-scheme: light;
-  --bg: #f5f5f7;
-  --card-bg: #ffffff;
-  --border: #d9d9df;
   --text: #1a1a1e;
-  --muted: #6b6b73;
-  --accent: #2563eb;
-  --error: #d92d20;
 }
 
 * {
@@ -26,7 +29,13 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f5f5f7;
+  /* Faint graph-paper texture: a 32px grid of olympiad-800 lines at ~4%
+     opacity, layered over the base surface. Sits behind every page; the
+     homepage hero image and the opaque interior-page backgrounds render
+     on top of it. */
+  background-color: #f5f5f7;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M32 0H0V32' fill='none' stroke='%23052659' stroke-opacity='0.04' stroke-width='1'/%3E%3C/svg%3E");
+  background-position: -1px -1px;
   color: var(--text);
 }
 
@@ -36,74 +45,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 380px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 32px;
-}
-
-.auth-card h1 {
-  font-size: 1.25rem;
-  margin: 0 0 20px;
-}
-
-.auth-card form {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.auth-card label {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-.auth-card input {
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-.auth-card button {
-  margin-top: 16px;
-  padding: 10px 12px;
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: white;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.auth-card button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-card p {
-  margin-top: 16px;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.divider {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 20px 0;
-}
-
-.form-error {
-  color: var(--error);
-  font-size: 0.85rem;
-  margin: 4px 0 0;
 }
 
 @keyframes fadeIn {

@@ -217,7 +217,7 @@ function DashboardContent() {
                     href={link.href}
                     className={cn(
                       "flex shrink-0 items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                      active ? "bg-olympiad-500/10 text-olympiad-500" : "text-olympiad-800 hover:bg-black/5",
+                      active ? "bg-medal-500/10 text-medal-700" : "text-olympiad-800 hover:bg-black/5",
                     )}
                   >
                     {link.icon}
@@ -236,7 +236,7 @@ function DashboardContent() {
         </aside>
 
         <main className="flex-1">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-medal-500/30 bg-medal-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-medal-700">
             Student Dashboard
           </span>
           <h1 className="mt-3 text-2xl font-bold text-olympiad-900 sm:text-3xl">Welcome back, {displayName}</h1>

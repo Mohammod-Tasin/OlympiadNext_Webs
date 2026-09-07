@@ -1,25 +1,31 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
+import heroBackground from "@/assets/hero-newton-cradle.webp";
 
 interface HeroEventBannerProps {
   config?: HeroEventConfig;
 }
 
 /**
- * Full-bleed hero. The event illustration is a CSS background anchored to
- * its left-centre, so the Newton's cradle (which lives in the left third of
- * the 16:9 artwork) stays framed and vertically centred at every viewport
- * aspect ratio — a `center`/`bottom` anchor cropped it away on portrait
- * screens.
+ * Full-bleed hero. The event illustration is anchored to its left-centre,
+ * so the Newton's cradle (which lives in the left third of the 16:9
+ * artwork) stays framed and vertically centred at every viewport aspect
+ * ratio — a `center`/`bottom` anchor cropped it away on portrait screens.
  *
  * - lg+: cradle clear on the left; copy occupies the right 50% over a
  *   left→right "transparent → white" readability gradient.
  * - < lg: the copy collapses to a centred frosted card so it stays legible
  *   wherever it overlaps the image.
+ *
+ * The artwork is rendered through `next/image` (a `fill` background layer),
+ * replacing the former 1.7 MB inline-SVG raster that was set as a CSS
+ * `background-image`. `objectPosition` reproduces the old
+ * `background-position: 10% 50%` anchor exactly, so framing is unchanged.
  */
 export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   const router = useRouter();
@@ -31,15 +37,19 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   }
 
   return (
-    <section
-      className="relative flex min-h-[calc(100vh-4rem)] w-full overflow-hidden"
-      style={{
-        backgroundImage: `url(${config.image})`,
-        backgroundSize: "cover",
-        backgroundPosition: "10% 50%",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <section className="relative flex min-h-[calc(100vh-4rem)] w-full overflow-hidden">
+      <Image
+        src={heroBackground}
+        alt=""
+        aria-hidden="true"
+        fill
+        preload
+        sizes="100vw"
+        placeholder="blur"
+        className="object-cover"
+        style={{ objectPosition: "10% 50%" }}
+      />
+
       {/* Desktop-only readability gradient. The whole left half is fully
           transparent (via-white/0 sits at 50%), so the Newton's cradle keeps
           100% of the source image's clarity; only the right half ramps up to
@@ -57,7 +67,7 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
         <div className="flex flex-col items-center lg:ml-auto lg:w-1/2 lg:items-end">
           {/* Content card: frosted panel on mobile, dissolves to bare copy on lg+. */}
           <div className="flex w-full max-w-xl flex-col items-center gap-6 rounded-[2rem] bg-white/75 px-6 py-9 text-center shadow-[0_16px_50px_rgb(15,23,42,0.12)] ring-1 ring-white/60 backdrop-blur-xl lg:max-w-none lg:items-end lg:rounded-none lg:bg-transparent lg:p-0 lg:text-right lg:shadow-none lg:ring-0 lg:backdrop-blur-none">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500 backdrop-blur-sm">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-medal-500/30 bg-medal-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-medal-700 backdrop-blur-sm">
               Upcoming Event
             </span>
 

@@ -45,7 +45,7 @@ function pad(value: number) {
 function Segment({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex flex-col items-center gap-1 rounded-xl border border-black/5 bg-white/90 px-3 py-2 shadow-[0_2px_10px_rgb(0,0,0,0.04)] backdrop-blur-sm sm:px-4 sm:py-3">
-      <span className="text-2xl font-bold tabular-nums text-olympiad-900 sm:text-3xl">{value}</span>
+      <span className="text-2xl font-bold tabular-nums text-medal-700 sm:text-3xl">{value}</span>
       <span className="text-[10px] font-semibold uppercase tracking-wide text-olympiad-800/50 sm:text-xs">
         {label}
       </span>
