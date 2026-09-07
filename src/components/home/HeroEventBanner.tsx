@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
-import { useAuth } from "@/lib/auth/useAuth";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 
 interface HeroEventBannerProps {
@@ -24,12 +23,11 @@ interface HeroEventBannerProps {
  */
 export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   const router = useRouter();
-  const { status } = useAuth();
 
-  // Logged-in users are presumably already registered — send them to the
-  // guidelines instead of back through the registration form.
+  // "Register Now" opens the rules/terms page; the user reviews them and then
+  // continues to the (login-gated) payment step from there.
   function handleRegisterClick() {
-    router.push(status === "authenticated" ? config.detailsHref : config.registerHref);
+    router.push(config.registerHref);
   }
 
   return (

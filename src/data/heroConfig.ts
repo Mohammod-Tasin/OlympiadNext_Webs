@@ -33,6 +33,6 @@ export const heroConfig: HeroEventConfig = {
   imageAlt: "Illustration of a student preparing for the National Math Olympiad",
   registerButtonText: "Register Now",
   detailsButtonText: "See Details",
-  registerHref: "/register",
+  registerHref: "/rules",
   detailsHref: "/guidelines",
 };
