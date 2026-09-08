@@ -31,6 +31,9 @@ export interface Registration {
   status: RegistrationStatus;
   created_at: string;
   reviewed_at?: string | null;
+  /** URL of the issued admit card (PDF). Present once an admin has issued
+   * it for an approved registration; `null`/absent until then. */
+  admit_card_url?: string | null;
 }
 
 /** The active event plus its per-event payment details, from

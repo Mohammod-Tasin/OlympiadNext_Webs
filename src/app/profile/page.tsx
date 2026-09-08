@@ -12,6 +12,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
+import { NotificationPreferences } from "@/components/profile/NotificationPreferences";
 
 function ProfileField({ label, value }: { label: string; value?: string }) {
   return (
@@ -157,6 +158,8 @@ function ProfileContent() {
           )}
         </CardContent>
       </Card>
+
+      <NotificationPreferences />
 
       <Button variant="primary" size="lg" onClick={handleLogout} className="w-full">
         Logout

@@ -20,7 +20,21 @@ export interface User {
   verification_doc?: string;
   /** URL of the uploaded profile picture, optional. */
   profile_picture?: string;
+
+  /** Channel for exam alerts (payment confirmed, admit card ready, …).
+   * Defaults to `"email"`; only settable to `"phone"` once
+   * `is_notification_phone_verified` is true. */
+  notification_preference?: NotificationChannel;
+  /** Mobile number registered for SMS alerts — may still be awaiting OTP
+   * verification (see `is_notification_phone_verified`). */
+  notification_phone?: string;
+  is_notification_phone_verified?: boolean;
 }
+
+/** Matches the backend's `method` field on
+ * `PUT /api/user/notification-preference`. The value is `"phone"` (not
+ * `"sms"`); the UI still labels it "Phone (SMS)". */
+export type NotificationChannel = "email" | "phone";
 
 export interface AuthResponse {
   access_token: string;

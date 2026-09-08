@@ -97,9 +97,9 @@ const REGISTRATION_BADGE: Record<Registration["status"], { label: string; classN
   rejected: { label: "Rejected", className: "bg-red-50 text-red-700" },
 };
 
-/** Exam-registration payments the student has submitted, with their
- * manual-review status. Renders nothing until at least one exists. */
-function RegistrationsCard() {
+/** Fetches the caller's exam registrations once on mount. Shared by the
+ * registrations list and the "Download Admit Card" quick action. */
+function useMyRegistrations() {
   const [registrations, setRegistrations] = useState<Registration[] | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -117,6 +117,47 @@ function RegistrationsCard() {
     };
   }, []);
 
+  return { registrations, failed };
+}
+
+/** A registration's admit-card row: a download link once the card is
+ * issued, otherwise a plain "not yet issued" note (no dead button). */
+function AdmitCardRow({ registration }: { registration: Registration }) {
+  if (registration.admit_card_url) {
+    return (
+      <a
+        href={registration.admit_card_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 inline-flex items-center gap-1.5 border-t border-gray-100 pt-2 text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
+      >
+        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+          <path d="M12 3.5v11m0 0 3.5-3.5M12 14.5 8.5 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4.5 15.5v3a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+        Download admit card
+      </a>
+    );
+  }
+  if (registration.status === "approved") {
+    return (
+      <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-olympiad-800/60">
+        Admit card: not yet issued
+      </p>
+    );
+  }
+  return null;
+}
+
+/** Exam-registration payments the student has submitted, with their
+ * manual-review status. Renders nothing until at least one exists. */
+function RegistrationsCard({
+  registrations,
+  failed,
+}: {
+  registrations: Registration[] | null;
+  failed: boolean;
+}) {
   if (failed || (registrations && registrations.length === 0)) return null;
 
   return (
@@ -135,24 +176,27 @@ function RegistrationsCard() {
             return (
               <div
                 key={reg.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
+                className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-olympiad-900">
-                    {reg.event_title || "Exam registration"}
-                  </p>
-                  <p className="text-xs text-olympiad-800/60">
-                    {reg.payment_method.toUpperCase()} · TrxID {reg.transaction_id}
-                  </p>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-olympiad-900">
+                      {reg.event_title || "Exam registration"}
+                    </p>
+                    <p className="text-xs text-olympiad-800/60">
+                      {reg.payment_method.toUpperCase()} · TrxID {reg.transaction_id}
+                    </p>
+                  </div>
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
+                      badge.className,
+                    )}
+                  >
+                    {badge.label}
+                  </span>
                 </div>
-                <span
-                  className={cn(
-                    "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
-                    badge.className,
-                  )}
-                >
-                  {badge.label}
-                </span>
+                <AdmitCardRow registration={reg} />
               </div>
             );
           })
@@ -187,6 +231,7 @@ function DashboardContent() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { registrations, failed } = useMyRegistrations();
 
   async function handleLogout() {
     await logout();
@@ -194,6 +239,8 @@ function DashboardContent() {
   }
 
   const displayName = user?.full_name || user?.email;
+  // The most recent registration that has an admit card ready to download.
+  const admitCardUrl = registrations?.find((reg) => reg.admit_card_url)?.admit_card_url ?? null;
 
   return (
     <div className="bg-gradient-to-b from-olympiad-50 to-white">
@@ -287,16 +334,27 @@ function DashboardContent() {
               </CardContent>
             </Card>
 
-            <RegistrationsCard />
+            <RegistrationsCard registrations={registrations} failed={failed} />
 
             <Card className="lg:col-span-3">
               <CardHeader>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Quick Actions</h2>
               </CardHeader>
               <CardContent className="flex flex-col gap-3 lg:flex-row">
-                <Button variant="primary" size="sm" className="flex-1">
-                  Download Admit Card
-                </Button>
+                {admitCardUrl ? (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => window.open(admitCardUrl, "_blank", "noopener,noreferrer")}
+                  >
+                    Download Admit Card
+                  </Button>
+                ) : (
+                  <p className="flex flex-1 items-center justify-center rounded-full px-4 py-2 text-center text-sm text-olympiad-800/50">
+                    Admit card not yet issued
+                  </p>
+                )}
                 <Button variant="outline" size="sm" className="flex-1" onClick={() => router.push("/profile")}>
                   Edit Profile
                 </Button>
