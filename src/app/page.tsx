@@ -44,6 +44,7 @@ export default async function HomePage() {
   if (event) {
     config = {
       ...heroConfig,
+      eventId: event.id || undefined,
       title: event.title,
       description: event.description || heroConfig.description,
       // The backend enforces ISO 8601 — pass the exact instant straight to

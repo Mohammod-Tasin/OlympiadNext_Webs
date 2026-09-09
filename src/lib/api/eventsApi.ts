@@ -15,6 +15,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 /** A single event as returned by `GET /api/client/events`. */
 export interface ActiveEvent {
+  /** Event id — used client-side to match the signed-in student's
+   * registrations (this response is public/cached and carries no per-user
+   * state of its own). May be absent on older backends. */
+  id: string;
   title: string;
   description: string;
   image_url: string;
@@ -41,6 +45,7 @@ export async function getActiveEvent(): Promise<ActiveEvent | null> {
     if (!event || !event.title || !event.event_date) return null;
 
     return {
+      id: event.id ?? "",
       title: event.title,
       description: event.description ?? "",
       image_url: event.image_url ?? "",

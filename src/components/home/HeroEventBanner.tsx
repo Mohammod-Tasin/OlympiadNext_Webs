@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
+import { useAuth } from "@/lib/auth/useAuth";
+import { getMyRegistrations } from "@/lib/api/registrationsApi";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 import heroBackground from "@/assets/hero-newton-cradle.webp";
 
@@ -29,6 +32,32 @@ interface HeroEventBannerProps {
  */
 export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
   const router = useRouter();
+  const { status } = useAuth();
+
+  // Whether the signed-in student already has a registration for this event.
+  // The event payload is public/ISR-cached and carries no per-user state, so
+  // this is derived from the authenticated `GET /api/user/registrations` —
+  // the same call the dashboard and payment page use. Stays `false` while
+  // logged out or loading, so the default "Register Now" path is unchanged.
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    if (status !== "authenticated" || !config.eventId) {
+      setIsRegistered(false);
+      return;
+    }
+    let cancelled = false;
+    getMyRegistrations()
+      .then((rows) => {
+        if (!cancelled) setIsRegistered(rows.some((r) => r.event_id === config.eventId));
+      })
+      .catch(() => {
+        if (!cancelled) setIsRegistered(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, config.eventId]);
 
   // "Register Now" opens the rules/terms page; the user reviews them and then
   // continues to the (login-gated) payment step from there.
@@ -89,10 +118,19 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
 
             <p className="max-w-lg text-base text-olympiad-800/80 sm:text-lg">{config.description}</p>
 
-            <div className="flex w-full flex-col gap-3 pt-1 sm:w-auto sm:flex-row sm:justify-center sm:gap-4 lg:justify-end">
-              <Button variant="primary" size="lg" onClick={handleRegisterClick}>
-                {config.registerButtonText}
-              </Button>
+            <div className="flex w-full flex-col gap-3 pt-1 sm:w-auto sm:flex-row sm:items-end sm:justify-center sm:gap-4 lg:justify-end">
+              {isRegistered ? (
+                <div className="flex flex-col gap-1 text-center">
+                  <span className="text-xs font-medium text-olympiad-800/60">Already Registered</span>
+                  <Button variant="primary" size="lg" onClick={() => router.push(config.enterHref)}>
+                    {config.enterButtonText}
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="primary" size="lg" onClick={handleRegisterClick}>
+                  {config.registerButtonText}
+                </Button>
+              )}
               <Button variant="outline" size="lg" onClick={() => router.push(config.detailsHref)}>
                 {config.detailsButtonText}
               </Button>

@@ -14,9 +14,18 @@ export interface HeroEventConfig {
   imageAlt: string;
   registerButtonText: string;
   detailsButtonText: string;
+  /** Primary button label shown once the signed-in student is already
+   * registered for this event (replaces `registerButtonText`). */
+  enterButtonText: string;
   /** Where the primary/secondary buttons route to. */
   registerHref: string;
   detailsHref: string;
+  /** Where "Enter Event" routes once the student is registered. */
+  enterHref: string;
+  /** Live event id from the events API, used to look up the caller's
+   * registrations. Absent in the static fallback — there is no event to
+   * enter, so the registered state never shows. */
+  eventId?: string;
 }
 
 // Fallback used when the backend has no active event (or the request fails).
@@ -33,6 +42,8 @@ export const heroConfig: HeroEventConfig = {
   imageAlt: "Illustration of a student preparing for the National Math Olympiad",
   registerButtonText: "Register Now",
   detailsButtonText: "See Details",
+  enterButtonText: "Enter Event",
   registerHref: "/rules",
   detailsHref: "/guidelines",
+  enterHref: "/dashboard",
 };
