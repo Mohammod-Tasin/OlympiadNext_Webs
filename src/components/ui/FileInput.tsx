@@ -4,8 +4,8 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
 export interface FileInputProps {
-  /** Field label — may hold bilingual text; rendered with `font-sans` so
-   * the system font handles Bengali. */
+  /** Field label — may hold bilingual text; the global dual-font stack
+   * (Saira + Anek Bangla) handles mixed Latin/Bengali automatically. */
   label?: ReactNode;
   /** Secondary helper line under the label. */
   hint?: ReactNode;
@@ -64,7 +64,7 @@ export function FileInput({
   }
 
   return (
-    <div className="flex flex-col gap-1.5 font-sans">
+    <div className="flex flex-col gap-1.5">
       {label && (
         <label htmlFor={inputId} className="text-sm font-medium leading-relaxed text-olympiad-900">
           {label}

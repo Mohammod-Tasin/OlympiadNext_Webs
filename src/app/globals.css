@@ -17,6 +17,16 @@
   --color-medal-700: #8a5f16;
 }
 
+@theme inline {
+  /* The dual-font stack, also wired into Tailwind's `font-sans` utility and
+     the preflight `<html>` default so every path resolves to the same order:
+     Saira (Latin) → Anek Bangla (Bengali) → system sans. Font variables come
+     from `next/font/google` in `layout.tsx`. */
+  --font-sans:
+    var(--font-saira), var(--font-anek-bangla), system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
 :root {
   color-scheme: light;
   --text: #1a1a1e;
@@ -28,7 +38,12 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Default text stack. Saira covers Latin; the browser falls through to
+     Anek Bangla for any Bengali codepoint it can't render, which handles
+     mixed-script strings automatically with no wrapper components. */
+  font-family:
+    var(--font-saira), var(--font-anek-bangla), system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   /* Faint graph-paper texture: a 32px grid of olympiad-800 lines at ~4%
      opacity, layered over the base surface. Sits behind every page; the
      homepage hero image and the opaque interior-page backgrounds render
@@ -37,6 +52,37 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M32 0H0V32' fill='none' stroke='%23052659' stroke-opacity='0.04' stroke-width='1'/%3E%3C/svg%3E");
   background-position: -1px -1px;
   color: var(--text);
+}
+
+/* ── Dual-font weight offset ────────────────────────────────────────────────
+   Anek Bangla renders visually heavier than Saira at the same numeric weight,
+   so Bengali text needs to sit one step lighter to stay optically matched
+   against Latin in a mixed string. Target mapping:
+
+       role     | Latin (Saira) | Bengali (Anek Bangla)
+       ---------|---------------|----------------------
+       normal   |      400      |         300
+       bold     |      500      |         400
+
+   Latin side: Saira's 700 is heavy for body copy — treat 500 as "bold". This
+   is not forced app-wide (that would restyle every existing `font-bold`);
+   to adopt it globally, uncomment the `@theme` override below, which retargets
+   Tailwind's `font-bold` / `font-semibold` utilities:
+
+       @theme { --font-weight-semibold: 500; --font-weight-bold: 500; }
+
+   Bengali side: applied automatically wherever an element is in a Bengali
+   language context (`lang="bn"` / `<html lang="bn">` / `:lang(bn)`). Untagged
+   inline Bengali inside an English page keeps the Latin weight — an accepted
+   trade for using pure CSS fallback with zero script-detection JS. To tune a
+   specific Bengali block by hand, mark it with `lang="bn"`. */
+:lang(bn) {
+  font-weight: 300;
+}
+
+:lang(bn) :is(b, strong, h1, h2, h3, h4, h5, h6, .font-medium, .font-semibold, .font-bold),
+:is(b, strong, h1, h2, h3, h4, h5, h6, .font-medium, .font-semibold, .font-bold):lang(bn) {
+  font-weight: 400;
 }
 
 .page-center {
