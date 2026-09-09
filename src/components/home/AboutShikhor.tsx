@@ -15,8 +15,6 @@ export function AboutShikhor() {
         <div className="text-center">
           <h2 className="text-2xl font-bold tracking-tight text-olympiad-900 sm:text-3xl">
             About Shikhor
-            <span className="mx-2 font-normal text-olympiad-800/30">|</span>
-            শিখর সম্পর্কে
           </h2>
           <span
             className="mx-auto mt-4 block h-1 w-16 rounded-full bg-medal-500"
