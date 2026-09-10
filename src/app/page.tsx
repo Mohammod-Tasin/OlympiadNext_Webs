@@ -1,8 +1,8 @@
 import { HeroEventBanner } from "@/components/home/HeroEventBanner";
-import { AboutShikhor } from "@/components/home/AboutShikhor";
 import { NoticeBoard } from "@/components/home/NoticeBoard";
 import { HowToParticipate } from "@/components/home/HowToParticipate";
 import { Timeline } from "@/components/home/Timeline";
+import { AboutShikhor } from "@/components/home/AboutShikhor";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 import { getActiveEvent } from "@/lib/api/eventsApi";
 
@@ -60,10 +60,10 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <HeroEventBanner config={config} />
-      <AboutShikhor />
       <NoticeBoard />
       <HowToParticipate />
       <Timeline />
+      <AboutShikhor />
     </div>
   );
 }
