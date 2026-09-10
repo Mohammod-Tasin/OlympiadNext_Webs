@@ -44,8 +44,16 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/60 sm:px-6">
-        &copy; {year} OlympiadNext. All rights reserved.
+      <div className="flex flex-col items-center gap-2 border-t border-white/10 px-4 py-4 text-center text-xs text-white/60 sm:flex-row sm:justify-between sm:px-6">
+        <span>&copy; {year} OlympiadNext. All rights reserved.</span>
+        <div className="flex items-center gap-4">
+          <Link href="/privacy" className="transition-colors hover:text-white">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="transition-colors hover:text-white">
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </footer>
   );
