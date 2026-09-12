@@ -35,7 +35,7 @@ export function HowToParticipate() {
                 {i + 1}
               </div>
               <p className="mt-4 text-sm font-medium text-olympiad-900">{step.en}</p>
-              <p lang="bn" className="mt-2 text-sm leading-relaxed text-olympiad-800/70">
+              <p lang="bn" className="mt-2 text-sm leading-relaxed text-text-muted">
                 {step.bn}
               </p>
             </div>

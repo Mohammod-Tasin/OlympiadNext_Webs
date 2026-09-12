@@ -89,7 +89,7 @@ export function LoginForm() {
         <h1 className="text-xl font-bold text-olympiad-900">
           {needsVerification ? "Verify your email" : "Welcome Back"}
         </h1>
-        <p className="mt-1 text-sm text-olympiad-800/70">
+        <p className="mt-1 text-sm text-text-muted">
           {needsVerification
             ? `Enter the 6-digit code sent to ${email.trim()}.`
             : "Log in to continue to your dashboard."}
@@ -150,7 +150,7 @@ export function LoginForm() {
               </Button>
             </form>
 
-            <div className="my-4 flex items-center gap-3 text-xs uppercase text-olympiad-800/50">
+            <div className="my-4 flex items-center gap-3 text-xs uppercase text-text-muted">
               <span className="h-px flex-1 bg-olympiad-50" />
               or
               <span className="h-px flex-1 bg-olympiad-50" />
@@ -162,7 +162,7 @@ export function LoginForm() {
       </CardContent>
 
       <CardFooter>
-        <p className="text-sm text-olympiad-800/80">
+        <p className="text-sm text-text-muted">
           Don&apos;t have an account?{" "}
           <Link href="/register" className="font-medium text-olympiad-500 hover:text-olympiad-800">
             Register

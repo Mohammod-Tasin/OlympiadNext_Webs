@@ -154,7 +154,7 @@ export function NotificationPreferences() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Notifications</h2>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p className="text-sm text-olympiad-800/70">
+        <p className="text-sm text-text-muted">
           Choose how we reach you about your registration — payment confirmation, admit-card
           availability, and exam-day reminders.
         </p>
@@ -177,7 +177,7 @@ export function NotificationPreferences() {
                   "rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                   selected
                     ? "bg-white text-olympiad-900 shadow-sm"
-                    : "text-olympiad-800/60 hover:text-olympiad-800",
+                    : "text-text-muted hover:text-olympiad-800",
                 )}
               >
                 {opt.label}
@@ -189,12 +189,12 @@ export function NotificationPreferences() {
         {flow === "idle" && (
           <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
             {active === "email" ? (
-              <p className="text-olympiad-800/80">
+              <p className="text-text-muted">
                 Alerts go to <span className="font-medium text-olympiad-900">{user?.email}</span>.
               </p>
             ) : (
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-olympiad-800/80">
+                <p className="text-text-muted">
                   Alerts go to{" "}
                   <span className="font-medium text-olympiad-900">{verifiedPhone}</span>.
                 </p>
@@ -228,7 +228,7 @@ export function NotificationPreferences() {
               disabled={busy}
               onChange={(e) => setPhone(e.target.value)}
             />
-            <p className="text-xs text-olympiad-800/60">
+            <p className="text-xs text-text-muted">
               We&apos;ll text a 6-digit code to confirm this number.
             </p>
             <div className="flex gap-2">
@@ -244,7 +244,7 @@ export function NotificationPreferences() {
 
         {flow === "otp" && (
           <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <p className="text-sm text-olympiad-800/70">
+            <p className="text-sm text-text-muted">
               Enter the 6-digit code sent to <span className="font-medium text-olympiad-900">{phone}</span>.
             </p>
             <OtpInput value={otp} onChange={setOtp} disabled={busy} />
@@ -270,7 +270,7 @@ export function NotificationPreferences() {
                 type="button"
                 disabled={busy}
                 onClick={() => reset("idle")}
-                className="text-sm font-medium text-olympiad-800/50 hover:text-olympiad-800 disabled:opacity-60"
+                className="text-sm font-medium text-text-muted hover:text-olympiad-800 disabled:opacity-60"
               >
                 Cancel
               </button>

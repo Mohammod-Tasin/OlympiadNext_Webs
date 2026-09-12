@@ -99,7 +99,7 @@ export function RegisterForm() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <h1 className="text-xl font-bold text-olympiad-900">Verify your email</h1>
-          <p className="mt-1 text-sm text-olympiad-800/70">
+          <p className="mt-1 text-sm text-text-muted">
             {step === "verified"
               ? "Your email is verified. Redirecting you to login…"
               : `Enter the 6-digit code we sent to ${email}.`}
@@ -133,7 +133,7 @@ export function RegisterForm() {
         </CardContent>
 
         <CardFooter>
-          <p className="text-sm text-olympiad-800/80">
+          <p className="text-sm text-text-muted">
             Already verified?{" "}
             <Link href="/login" className="font-medium text-olympiad-500 hover:text-olympiad-800">
               Login
@@ -148,7 +148,7 @@ export function RegisterForm() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <h1 className="text-xl font-bold text-olympiad-900">Create an Account</h1>
-        <p className="mt-1 text-sm text-olympiad-800/70">Register to start competing in olympiads.</p>
+        <p className="mt-1 text-sm text-text-muted">Register to start competing in olympiads.</p>
       </CardHeader>
 
       <CardContent>
@@ -193,7 +193,7 @@ export function RegisterForm() {
             }}
           />
 
-          <p className="text-xs text-olympiad-800/60">
+          <p className="text-xs text-text-muted">
             You&apos;ll add your name, institution and academic details after verifying your email.
           </p>
 
@@ -204,7 +204,7 @@ export function RegisterForm() {
           </Button>
         </form>
 
-        <div className="my-4 flex items-center gap-3 text-xs uppercase text-olympiad-800/50">
+        <div className="my-4 flex items-center gap-3 text-xs uppercase text-text-muted">
           <span className="h-px flex-1 bg-olympiad-50" />
           or
           <span className="h-px flex-1 bg-olympiad-50" />
@@ -214,7 +214,7 @@ export function RegisterForm() {
       </CardContent>
 
       <CardFooter>
-        <p className="text-sm text-olympiad-800/80">
+        <p className="text-sm text-text-muted">
           Already have an account?{" "}
           <Link href="/login" className="font-medium text-olympiad-500 hover:text-olympiad-800">
             Login

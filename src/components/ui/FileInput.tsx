@@ -71,7 +71,7 @@ export function FileInput({
           {required && <span className="text-red-500"> *</span>}
         </label>
       )}
-      {hint && <p className="text-xs leading-relaxed text-olympiad-800/60">{hint}</p>}
+      {hint && <p className="text-xs leading-relaxed text-text-muted">{hint}</p>}
 
       <input
         ref={inputRef}
@@ -110,7 +110,7 @@ export function FileInput({
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-olympiad-900">{file.name}</p>
-            <p className="text-xs text-olympiad-800/50">{formatBytes(file.size)}</p>
+            <p className="text-xs text-text-muted">{formatBytes(file.size)}</p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
             <button
@@ -126,7 +126,7 @@ export function FileInput({
               disabled={disabled}
               onClick={clear}
               aria-label="Remove file"
-              className="rounded-lg p-1.5 text-olympiad-800/50 hover:bg-black/5 hover:text-olympiad-900 disabled:opacity-50"
+              className="rounded-lg p-1.5 text-text-muted hover:bg-black/5 hover:text-olympiad-900 disabled:opacity-50"
             >
               <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
                 <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -140,7 +140,7 @@ export function FileInput({
           disabled={disabled}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            "flex items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-3 py-3 text-sm text-olympiad-800/70",
+            "flex items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-3 py-3 text-sm text-text-muted",
             "hover:border-olympiad-500 hover:text-olympiad-800",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-olympiad-300",
             "disabled:cursor-not-allowed disabled:opacity-60",

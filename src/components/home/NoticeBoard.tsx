@@ -13,7 +13,7 @@ export async function NoticeBoard() {
           </CardHeader>
           <CardContent>
             {notices.length === 0 ? (
-              <p className="text-sm text-olympiad-800/70">
+              <p className="text-sm text-text-muted">
                 No notices right now — check back soon.
               </p>
             ) : (
@@ -23,7 +23,7 @@ export async function NoticeBoard() {
                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-olympiad-500" aria-hidden="true" />
                     <span>
                       {notice.text_en}{" "}
-                      <span lang="bn" className="text-olympiad-800/70">({notice.text_bn})</span>
+                      <span lang="bn" className="text-text-muted">({notice.text_bn})</span>
                     </span>
                   </li>
                 ))}

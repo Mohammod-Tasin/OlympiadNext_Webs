@@ -38,7 +38,7 @@ function ExternalLink({ href, children }: { href: string; children: ReactNode })
 
 function Bullets({ items }: { items: ReactNode[] }) {
   return (
-    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-olympiad-800/40">
+    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-text-muted">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}
@@ -362,9 +362,9 @@ export default function PrivacyPolicyPage() {
         </span>
 
         <h1 className="mt-3 text-2xl font-bold text-olympiad-900 sm:text-3xl">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-olympiad-800/60">Last updated: {LAST_UPDATED}</p>
+        <p className="mt-2 text-sm text-text-muted">Last updated: {LAST_UPDATED}</p>
 
-        <div className="mt-4 flex flex-col gap-3 text-sm leading-relaxed text-olympiad-800/80">
+        <div className="mt-4 flex flex-col gap-3 text-sm leading-relaxed text-text-muted">
           <p>
             শিখর (Shikhor) is an online Olympiad and academic contest platform for school and college students in
             Bangladesh, run at <Term>shikhor.net</Term>. This Privacy Policy explains what personal information we
@@ -384,7 +384,7 @@ export default function PrivacyPolicyPage() {
               <li key={section.id}>
                 <a
                   href={`#${section.id}`}
-                  className="text-olympiad-800/80 transition-colors hover:text-olympiad-900 hover:underline"
+                  className="text-text-muted transition-colors hover:text-olympiad-900 hover:underline"
                 >
                   {i + 1}. {section.title}
                 </a>
@@ -399,7 +399,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-lg font-semibold text-olympiad-900">
                 {i + 1}. {section.title}
               </h2>
-              <div className="mt-3 flex flex-col gap-3 text-sm leading-relaxed text-olympiad-800/80">
+              <div className="mt-3 flex flex-col gap-3 text-sm leading-relaxed text-text-muted">
                 {section.content}
               </div>
             </Card>

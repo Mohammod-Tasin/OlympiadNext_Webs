@@ -74,7 +74,7 @@ export default function RulesPage() {
         </span>
 
         <h1 className="mt-3 text-2xl font-bold text-olympiad-900 sm:text-3xl">Rules &amp; Terms</h1>
-        <p className="mt-2 text-sm text-olympiad-800/70">
+        <p className="mt-2 text-sm text-text-muted">
           Read through the olympiad rules and registration terms below. When you are ready,
           use the button at the bottom to continue to payment.
         </p>
@@ -89,20 +89,20 @@ export default function RulesPage() {
           </span>
         </div>
 
-        <div className="mt-8 flex flex-col gap-5">
+        <Card className="mt-8 divide-y divide-gray-100">
           {SECTIONS.map((section) => (
-            <Card key={section.title} className="p-6">
+            <div key={section.title} className="p-6">
               <h2 className="text-base font-semibold text-olympiad-900">{section.title}</h2>
               <div className="mt-3 flex flex-col gap-3">
                 {section.body.map((paragraph, i) => (
-                  <p key={i} className="text-sm leading-relaxed text-olympiad-800/80">
+                  <p key={i} className="text-sm leading-relaxed text-text-muted">
                     {paragraph}
                   </p>
                 ))}
               </div>
-            </Card>
+            </div>
           ))}
-        </div>
+        </Card>
       </div>
 
       <ProceedBar />

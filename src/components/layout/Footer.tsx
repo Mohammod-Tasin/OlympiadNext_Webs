@@ -3,7 +3,7 @@ import { BrandLogo } from "@/components/common/BrandLogo";
 
 const QUICK_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+  { href: "/#about", label: "About" },
   { href: "/rules", label: "Guidelines" },
 ];
 
@@ -37,9 +37,9 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-wide text-olympiad-50">Contact</h4>
           <ul className="mt-3 flex flex-col gap-2 text-sm text-white/80">
-            <li>support@olympiadnext.com</li>
-            <li>+1 (555) 123-4567</li>
-            <li>123 Olympiad Ave, Learning City</li>
+            <li>olympiadnext@gmail.com</li>
+            <li>+8801771080238</li>
+            <li>RUET, 6204</li>
           </ul>
         </div>
       </div>

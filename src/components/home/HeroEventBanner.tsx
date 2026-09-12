@@ -116,7 +116,7 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
 
             <CountdownTimer targetDate={config.eventDateISO} className="justify-center lg:justify-end" />
 
-            <p className="max-w-lg text-base text-olympiad-800/80 sm:text-lg">{config.description}</p>
+            <p className="max-w-lg text-base text-text-muted sm:text-lg">{config.description}</p>
 
             <div className="flex w-full flex-col gap-3 pt-1 sm:w-auto sm:flex-row sm:items-end sm:justify-center sm:gap-4 lg:justify-end">
               {isRegistered ? (

@@ -1,5 +1,3 @@
-import { Card } from "@/components/ui/Card";
-
 /** Verbatim copy — the English and Bengali descriptions are kept in sync
  * and must not be paraphrased. */
 const ABOUT_EN =
@@ -22,27 +20,27 @@ export function AboutShikhor() {
           />
         </div>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-2">
-          <Card className="p-6 sm:p-8">
+        <div className="mt-10 grid gap-8 divide-y divide-olympiad-200 md:grid-cols-2 md:divide-x md:divide-y-0">
+          <div>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-olympiad-500">
               English
             </h3>
-            <p className="mt-3 text-base leading-relaxed text-olympiad-800/80 sm:text-lg">
+            <p className="mt-3 text-base leading-relaxed text-text-muted sm:text-lg">
               {ABOUT_EN}
             </p>
-          </Card>
+          </div>
 
-          <Card className="p-6 sm:p-8">
+          <div>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-olympiad-500">
               বাংলা
             </h3>
             <p
               lang="bn"
-              className="mt-3 text-base leading-loose text-olympiad-800/80 sm:text-lg"
+              className="mt-3 text-base leading-loose text-text-muted sm:text-lg"
             >
               {ABOUT_BN}
             </p>
-          </Card>
+          </div>
         </div>
       </div>
     </section>

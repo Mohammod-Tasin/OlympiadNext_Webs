@@ -1,10 +1,18 @@
+import { Suspense } from "react";
+import type { Metadata } from "next";
 import { HeroEventBanner } from "@/components/home/HeroEventBanner";
 import { NoticeBoard } from "@/components/home/NoticeBoard";
 import { HowToParticipate } from "@/components/home/HowToParticipate";
 import { Timeline } from "@/components/home/Timeline";
 import { AboutShikhor } from "@/components/home/AboutShikhor";
+import { SectionSkeleton } from "@/components/ui/SectionSkeleton";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 import { getActiveEvent } from "@/lib/api/eventsApi";
+
+export const metadata: Metadata = {
+  title: "OlympiadNext",
+  description: "Discover upcoming academic olympiads, register your school, and track important exam dates.",
+};
 
 /** The timezone every event date is displayed in (UTC+6). */
 const EVENT_TIME_ZONE = "Asia/Dhaka";
@@ -60,9 +68,17 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
       <HeroEventBanner config={config} />
-      <NoticeBoard />
+      <Suspense fallback={<SectionSkeleton heightClassName="h-56" />}>
+        <NoticeBoard />
+      </Suspense>
       <HowToParticipate />
-      <Timeline />
+      <Suspense
+        fallback={
+          <SectionSkeleton className="bg-olympiad-800" blockClassName="bg-white/10" heightClassName="h-96" />
+        }
+      >
+        <Timeline />
+      </Suspense>
       <AboutShikhor />
     </div>
   );

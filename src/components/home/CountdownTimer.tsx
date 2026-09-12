@@ -42,11 +42,18 @@ function pad(value: number) {
   return String(value).padStart(2, "0");
 }
 
-function Segment({ value, label }: { value: string; label: string }) {
+function Segment({ value, label, urgent }: { value: string; label: string; urgent?: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-xl border border-black/5 bg-white/90 px-3 py-2 shadow-[0_2px_10px_rgb(0,0,0,0.04)] backdrop-blur-sm sm:px-4 sm:py-3">
-      <span className="text-2xl font-bold tabular-nums text-medal-700 sm:text-3xl">{value}</span>
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-olympiad-800/50 sm:text-xs">
+    <div
+      className={cn(
+        "flex flex-col items-center gap-1 rounded-xl border px-3 py-2 shadow-[0_2px_10px_rgb(0,0,0,0.04)] backdrop-blur-sm sm:px-4 sm:py-3",
+        urgent ? "border-red-200 bg-red-50/90" : "border-black/5 bg-white/90",
+      )}
+    >
+      <span className={cn("text-2xl font-bold tabular-nums sm:text-3xl", urgent ? "text-red-600" : "text-medal-700")}>
+        {value}
+      </span>
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-text-muted sm:text-xs">
         {label}
       </span>
     </div>
@@ -72,10 +79,17 @@ export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
     return <p className={cn("text-sm font-medium text-olympiad-800", className)}>The event has started.</p>;
   }
 
+  const isUrgent = timeLeft ? timeLeft.days === 0 : false;
+
   return (
     <div className={cn("flex gap-2 sm:gap-3", className)}>
       {SEGMENTS.map((segment) => (
-        <Segment key={segment.key} value={timeLeft ? pad(timeLeft[segment.key]) : "--"} label={segment.label} />
+        <Segment
+          key={segment.key}
+          value={timeLeft ? pad(timeLeft[segment.key]) : "--"}
+          label={segment.label}
+          urgent={isUrgent}
+        />
       ))}
     </div>
   );

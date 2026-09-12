@@ -62,7 +62,7 @@ function RoundCard({
       <CardHeader className="flex flex-row items-center justify-between gap-4">
         <div>
           <h3 className="font-semibold text-olympiad-900">{round.round_name}</h3>
-          <p className="text-sm text-olympiad-800/60">{formatDate(round.start_at)}</p>
+          <p className="text-sm text-text-muted">{formatDate(round.start_at)}</p>
         </div>
         {round.your_status === "winner" && (
           <span className="inline-flex items-center gap-2 rounded-full bg-medal-500/10 px-3 py-1.5 text-sm font-semibold text-medal-700 ring-1 ring-inset ring-medal-500/30">
@@ -72,12 +72,12 @@ function RoundCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {round.your_status === "waiting" && (
-          <p className="text-sm text-olympiad-800/50">Waiting for previous round results</p>
+          <p className="text-sm text-text-muted">Waiting for previous round results</p>
         )}
 
         {round.your_status === "locked" && (
           <>
-            <p className="flex items-center gap-2 text-sm text-olympiad-800/70">
+            <p className="flex items-center gap-2 text-sm text-text-muted">
               <LockIcon />
               {round.duration_minutes} min
             </p>
@@ -87,7 +87,7 @@ function RoundCard({
 
         {round.your_status === "ready" && (
           <>
-            <p className="text-sm text-olympiad-800/70">{round.duration_minutes} min</p>
+            <p className="text-sm text-text-muted">{round.duration_minutes} min</p>
             <Button onClick={() => onEnter(round)} loading={entering} className="w-fit">
               Enter Exam
             </Button>
@@ -100,7 +100,7 @@ function RoundCard({
         )}
 
         {round.your_status === "eliminated" && (
-          <p className="text-sm text-olympiad-800/60">Not qualified for this round.</p>
+          <p className="text-sm text-text-muted">Not qualified for this round.</p>
         )}
 
         {round.your_status === "qualified" && (
@@ -115,7 +115,7 @@ function RoundCard({
         )}
 
         {round.your_status === null && (
-          <p className="text-sm text-olympiad-800/50">Status unavailable.</p>
+          <p className="text-sm text-text-muted">Status unavailable.</p>
         )}
       </CardContent>
     </Card>
@@ -173,7 +173,7 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       {loading ? (
-        <p className="text-sm text-olympiad-800/70">Loading…</p>
+        <p className="text-sm text-text-muted">Loading…</p>
       ) : loadError ? (
         <Card>
           <CardContent className="flex flex-col items-start gap-3">
@@ -190,7 +190,7 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
           {data.rounds[0]?.your_status === "not_eligible" ? (
             <Card className="mt-8">
               <CardContent className="flex flex-col gap-3">
-                <p className="text-sm text-olympiad-800/80">
+                <p className="text-sm text-text-muted">
                   You don&apos;t have an approved registration for this event yet, so round details
                   aren&apos;t available. If you&apos;ve already registered, it may still be pending
                   verification — check your registration status for updates.

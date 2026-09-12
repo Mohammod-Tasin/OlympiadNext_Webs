@@ -15,6 +15,14 @@
   --color-medal-50: #fbf3dd;
   --color-medal-500: #c08a2d;
   --color-medal-700: #8a5f16;
+
+  --color-brand: var(--color-olympiad-800);
+  --color-brand-strong: var(--color-olympiad-900);
+  --color-cta-bg: var(--color-olympiad-800);
+  --color-cta-bg-hover: var(--color-olympiad-900);
+  --color-surface-alt: var(--color-olympiad-50);
+  --color-accent: var(--color-medal-500);
+  --color-text-muted: #5b6b82;
 }
 
 @theme inline {
