@@ -5,6 +5,7 @@ const QUICK_LINKS = [
   { href: "/", label: "Home" },
   { href: "/#about", label: "About" },
   { href: "/rules", label: "Guidelines" },
+  { href: "/fairness", label: "Fairness & Integrity" },
 ];
 
 export function Footer() {
