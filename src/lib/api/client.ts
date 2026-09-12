@@ -125,7 +125,13 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message = (data && typeof data === "object" && "error" in data ? String(data.error) : null) ?? res.statusText;
+    // Most endpoints send `{ error }`; a few (e.g. round entry) send
+    // `{ reason }` instead — check both so ApiError.message always carries
+    // the backend's specific text.
+    const message =
+      (data && typeof data === "object" && "error" in data ? String(data.error) : null) ??
+      (data && typeof data === "object" && "reason" in data ? String(data.reason) : null) ??
+      res.statusText;
     throw new ApiError(res.status, message);
   }
 
