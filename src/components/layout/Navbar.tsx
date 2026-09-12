@@ -11,7 +11,7 @@ import { useAuth } from "@/lib/auth/useAuth";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/guidelines", label: "Guidelines" },
+  { href: "/rules", label: "Guidelines" },
 ];
 
 export function Navbar() {

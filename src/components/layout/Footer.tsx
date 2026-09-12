@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/common/BrandLogo";
 const QUICK_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/guidelines", label: "Guidelines" },
+  { href: "/rules", label: "Guidelines" },
 ];
 
 export function Footer() {

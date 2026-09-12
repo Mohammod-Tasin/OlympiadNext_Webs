@@ -28,17 +28,6 @@ const SIDEBAR_LINKS: Array<{ href: string; label: string; icon: ReactNode }> = [
     ),
   },
   {
-    href: "/dashboard/mock-tests",
-    label: "Mock Tests",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5" aria-hidden="true">
-        <path d="M6.5 3.5h8L18.5 8v12.5a1 1 0 01-1 1h-11a1 1 0 01-1-1v-16a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M14.5 3.5V8h4" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M8.5 12.5h7M8.5 15.5h7M8.5 18.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
     href: "/dashboard/results",
     label: "Results",
     icon: (
@@ -120,33 +109,44 @@ function useMyRegistrations() {
   return { registrations, failed };
 }
 
-/** A registration's admit-card row: a download link once the card is
- * issued, otherwise a plain "not yet issued" note (no dead button). */
-function AdmitCardRow({ registration }: { registration: Registration }) {
-  if (registration.admit_card_url) {
-    return (
-      <a
-        href={registration.admit_card_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-2 inline-flex items-center gap-1.5 border-t border-gray-100 pt-2 text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
-      >
-        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
-          <path d="M12 3.5v11m0 0 3.5-3.5M12 14.5 8.5 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M4.5 15.5v3a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-        Download admit card
-      </a>
-    );
-  }
-  if (registration.status === "approved") {
-    return (
-      <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-olympiad-800/60">
-        Admit card: not yet issued
-      </p>
-    );
-  }
-  return null;
+/** A registration's footer: admit-card status (download link once issued,
+ * otherwise a "not yet issued" note for an approved registration, nothing
+ * for a pending one) plus a link into that event's rounds — hidden only
+ * for a rejected registration, which has no path forward. */
+function RegistrationFooter({ registration }: { registration: Registration }) {
+  const admitCard = registration.admit_card_url ? (
+    <a
+      href={registration.admit_card_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
+    >
+      <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 shrink-0" aria-hidden="true">
+        <path d="M12 3.5v11m0 0 3.5-3.5M12 14.5 8.5 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M4.5 15.5v3a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+      Download admit card
+    </a>
+  ) : registration.status === "approved" ? (
+    <span className="text-xs text-olympiad-800/60">Admit card: not yet issued</span>
+  ) : null;
+
+  const showViewRounds = registration.status !== "rejected";
+  if (!admitCard && !showViewRounds) return null;
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-2">
+      {admitCard}
+      {showViewRounds && (
+        <Link
+          href={`/events/${registration.event_id}`}
+          className="text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
+        >
+          View event rounds
+        </Link>
+      )}
+    </div>
+  );
 }
 
 /** Exam-registration payments the student has submitted, with their
@@ -196,7 +196,7 @@ function RegistrationsCard({
                     {badge.label}
                   </span>
                 </div>
-                <AdmitCardRow registration={reg} />
+                <RegistrationFooter registration={reg} />
               </div>
             );
           })
@@ -325,12 +325,6 @@ function DashboardContent() {
                   <p className="font-semibold text-olympiad-900">Mock Test</p>
                   <p className="mt-0.5 text-sm text-olympiad-800/70">Apr 5, 2026 &middot; 10:00 AM</p>
                 </div>
-                <Link
-                  href="/guidelines"
-                  className="mt-auto text-xs font-medium text-olympiad-500 hover:text-olympiad-800"
-                >
-                  View all events
-                </Link>
               </CardContent>
             </Card>
 
@@ -358,7 +352,7 @@ function DashboardContent() {
                 <Button variant="outline" size="sm" className="flex-1" onClick={() => router.push("/profile")}>
                   Edit Profile
                 </Button>
-                <Button variant="ghost" size="sm" className="flex-1" onClick={() => router.push("/guidelines")}>
+                <Button variant="ghost" size="sm" className="flex-1" onClick={() => router.push("/rules")}>
                   View Guidelines
                 </Button>
               </CardContent>

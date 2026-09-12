@@ -122,7 +122,11 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
               {isRegistered ? (
                 <div className="flex flex-col gap-1 text-center">
                   <span className="text-xs font-medium text-emerald-600">Already Registered</span>
-                  <Button variant="primary" size="lg" onClick={() => router.push(config.enterHref)}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => config.eventId && router.push(`/events/${config.eventId}`)}
+                  >
                     {config.enterButtonText}
                   </Button>
                 </div>

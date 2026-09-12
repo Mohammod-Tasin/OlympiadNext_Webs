@@ -20,8 +20,6 @@ export interface HeroEventConfig {
   /** Where the primary/secondary buttons route to. */
   registerHref: string;
   detailsHref: string;
-  /** Where "Enter Event" routes once the student is registered. */
-  enterHref: string;
   /** Live event id from the events API, used to look up the caller's
    * registrations. Absent in the static fallback — there is no event to
    * enter, so the registered state never shows. */
@@ -44,6 +42,5 @@ export const heroConfig: HeroEventConfig = {
   detailsButtonText: "See Details",
   enterButtonText: "Enter Event",
   registerHref: "/rules",
-  detailsHref: "/guidelines",
-  enterHref: "/dashboard",
+  detailsHref: "/rules",
 };
