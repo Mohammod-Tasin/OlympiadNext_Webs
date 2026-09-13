@@ -10,6 +10,8 @@ import { ApiError } from "@/lib/api/client";
 import { getEventRounds, getEventById, enterRound } from "@/lib/api/roundsApi";
 import { getEventPrizes } from "@/lib/api/prizesApi";
 import { findPrize } from "@/lib/utils/findPrize";
+import { useAuth } from "@/lib/auth/useAuth";
+import { levelLabel } from "@/lib/constants/academic";
 import type { EventRound, EventRoundsResponse } from "@/types/event";
 import type { PrizeResponse } from "@/types/prize";
 
@@ -45,12 +47,34 @@ function CheckIcon() {
   );
 }
 
+// Mirrors the admin panel's own LevelBadge color scheme for visual
+// consistency across the platform. Only shown here in the edge case where
+// an authenticated student has no level on file yet, in which case the
+// backend returns every level's rounds unfiltered — this badge is what
+// keeps that mix unambiguous per round.
+const LEVEL_BADGE_COLORS: Record<string, string> = {
+  Junior: "bg-sky-100 text-sky-700",
+  Secondary: "bg-violet-100 text-violet-700",
+  "Higher Secondary": "bg-rose-100 text-rose-700",
+};
+
+function LevelBadge({ level }: { level: string }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${LEVEL_BADGE_COLORS[level] ?? "bg-gray-100 text-gray-700"}`}
+    >
+      {level}
+    </span>
+  );
+}
+
 function RoundCard({
   round,
   eventId,
   entering,
   enterError,
   prizes,
+  showLevelBadge,
   onEnter,
 }: {
   round: EventRound;
@@ -58,6 +82,7 @@ function RoundCard({
   entering: boolean;
   enterError?: string;
   prizes: PrizeResponse[] | null;
+  showLevelBadge: boolean;
   onEnter: (round: EventRound) => void;
 }) {
   const isDisabledState = round.your_status === "eliminated";
@@ -68,7 +93,10 @@ function RoundCard({
     <Card className={isDisabledState ? "opacity-60" : undefined}>
       <CardHeader className="flex flex-row items-center justify-between gap-4">
         <div>
-          <h3 className="font-semibold text-olympiad-900">{round.round_name}</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold text-olympiad-900">{round.round_name}</h3>
+            {showLevelBadge && <LevelBadge level={round.level} />}
+          </div>
           <p className="text-sm text-text-muted">{formatDate(round.start_at)}</p>
         </div>
         {isWinner && (
@@ -145,6 +173,7 @@ function RoundCard({
 
 export function EventRoundsContent({ eventId }: { eventId: string }) {
   const router = useRouter();
+  const { user } = useAuth();
   const [data, setData] = useState<EventRoundsResponse | null>(null);
   const [title, setTitle] = useState(DEFAULT_TITLE);
   const [loading, setLoading] = useState(true);
@@ -206,6 +235,15 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
     }
   }
 
+  // Prefer the student's own profile level (always available once
+  // onboarding is complete, independent of whether any round exists yet);
+  // fall back to the first returned round's level otherwise. All rounds in
+  // one response share the caller's level per the backend filter, except
+  // the no-level-on-file edge case, which the per-card LevelBadge below
+  // covers instead.
+  const level = user?.level ?? data?.rounds[0]?.level ?? null;
+  const hasMixedLevels = Boolean(data && new Set(data.rounds.map((r) => r.level)).size > 1);
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       {loading ? (
@@ -222,6 +260,11 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
       ) : !data ? null : (
         <>
           <h1 className="text-2xl font-bold text-olympiad-900 sm:text-3xl">{title}</h1>
+          {level && (
+            <p className="mt-1 text-sm text-text-muted">
+              Showing rounds for: <span className="font-medium text-olympiad-800">{levelLabel(level)}</span>
+            </p>
+          )}
 
           {data.rounds[0]?.your_status === "not_eligible" ? (
             <Card className="mt-8">
@@ -253,6 +296,7 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
                     entering={enteringId === round.id}
                     enterError={enterErrors[round.id] || undefined}
                     prizes={prizes}
+                    showLevelBadge={hasMixedLevels}
                     onEnter={handleEnter}
                   />
                 ))}

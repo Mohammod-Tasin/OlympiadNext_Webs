@@ -33,6 +33,12 @@ export interface EventRound {
   /** Marks the event's one designated final round — only a final round's
    * winner decision carries a rank. */
   is_final: boolean;
+  /** One of "Junior", "Secondary", "Higher Secondary". The public listing
+   * is filtered to the caller's own level when authenticated (see
+   * `roundsApi.ts`'s `getEventRounds`), so every round in one response
+   * normally shares this value — except for an authenticated caller with
+   * no level on file yet, who sees every level's rounds unfiltered. */
+  level: string;
   your_status: RoundStatus | null;
   /** The caller's placement (1st, 2nd, 3rd…) when your_status is
    * "winner". The backend sends this with `omitempty`, so the key is
