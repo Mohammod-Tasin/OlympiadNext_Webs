@@ -4,13 +4,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/lib/auth/useAuth";
-import { updateUserProfile } from "@/lib/api/userApi";
+import { updateUserProfile, uploadUserFile } from "@/lib/api/userApi";
 import { ApiError } from "@/lib/api/client";
-import { LEVEL_OPTIONS, MEDIUM_OPTIONS, levelLabel } from "@/lib/constants/academic";
+import { LEVEL_OPTIONS, MEDIUM_OPTIONS, VERIFICATION_DOC_LABEL, levelLabel } from "@/lib/constants/academic";
+import { DOC_ACCEPT, validateFile } from "@/lib/utils/fileValidation";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { FileInput } from "@/components/ui/FileInput";
 import { Button } from "@/components/ui/Button";
 import { NotificationPreferences } from "@/components/profile/NotificationPreferences";
 
@@ -33,16 +35,31 @@ function ProfileContent() {
   const [institutionName, setInstitutionName] = useState(user?.institution_name ?? "");
   const [level, setLevel] = useState(user?.level ?? "");
   const [medium, setMedium] = useState(user?.medium ?? "");
+  const [verificationDoc, setVerificationDoc] = useState<File | null>(null);
+  const [docError, setDocError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Changing level or institution invalidates the admin's existing review
+  // of the student, so a fresh document is required alongside those two
+  // fields specifically — full_name/medium never need one.
+  const levelOrInstitutionChanged =
+    level !== (user?.level ?? "") || institutionName.trim() !== (user?.institution_name ?? "");
 
   function startEditing() {
     setFullName(user?.full_name ?? "");
     setInstitutionName(user?.institution_name ?? "");
     setLevel(user?.level ?? "");
     setMedium(user?.medium ?? "");
+    setVerificationDoc(null);
+    setDocError(null);
     setError(null);
     setEditing(true);
+  }
+
+  function pickVerificationDoc(file: File | null) {
+    setVerificationDoc(file);
+    setDocError(file ? validateFile(file, DOC_ACCEPT) : null);
   }
 
   // Lets Quick Actions' "Edit Profile" button link straight into edit mode
@@ -55,16 +72,33 @@ function ProfileContent() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (levelOrInstitutionChanged && !verificationDoc) {
+      setDocError("Changing your level or school requires a new verification document.");
+      return;
+    }
+    const docIssue = verificationDoc ? validateFile(verificationDoc, DOC_ACCEPT) : null;
+    if (docIssue) {
+      setDocError(docIssue);
+      return;
+    }
+
     setSubmitting(true);
     try {
+      const doc = verificationDoc ? await uploadUserFile(verificationDoc) : null;
+
       await updateUserProfile({
         full_name: fullName.trim(),
         institution_name: institutionName.trim(),
         level,
         medium,
+        // Omitted (not an empty string) when no new file was picked — the
+        // backend keeps the stored document and verification status as-is.
+        verification_doc: doc?.url,
       });
       await refreshUser();
       setEditing(false);
+      setVerificationDoc(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not update your profile");
     } finally {
@@ -137,6 +171,22 @@ function ProfileContent() {
                   </option>
                 ))}
               </Select>
+
+              <FileInput
+                id="verification-doc"
+                label={VERIFICATION_DOC_LABEL}
+                hint={
+                  levelOrInstitutionChanged
+                    ? "Required — you changed your level or school. Image or PDF, up to 10 MB."
+                    : "Optional — only needed if you change your level or school. Image or PDF, up to 10 MB."
+                }
+                accept={DOC_ACCEPT}
+                required={levelOrInstitutionChanged}
+                disabled={submitting}
+                file={verificationDoc}
+                onFileChange={pickVerificationDoc}
+                error={docError ?? undefined}
+              />
 
               {error && <p className="text-sm text-red-600">{error}</p>}
 

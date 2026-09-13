@@ -6,31 +6,14 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/lib/auth/useAuth";
 import { uploadUserFile, updateUserProfile } from "@/lib/api/userApi";
 import { ApiError } from "@/lib/api/client";
-import { LEVEL_OPTIONS, MEDIUM_OPTIONS } from "@/lib/constants/academic";
+import { LEVEL_OPTIONS, MEDIUM_OPTIONS, VERIFICATION_DOC_LABEL } from "@/lib/constants/academic";
+import { DOC_ACCEPT, IMAGE_ACCEPT, validateFile } from "@/lib/utils/fileValidation";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { FileInput } from "@/components/ui/FileInput";
 import { Button } from "@/components/ui/Button";
 import { Stepper } from "@/components/ui/Stepper";
 import type { User } from "@/types/auth";
-
-// Exact label copy mandated for the verification document field.
-const VERIFICATION_DOC_LABEL =
-  "Verification Document [যেকোনো প্রমাণপত্র যা নিশ্চিত করে আপনি ওই প্রতিষ্ঠানের ছাত্র (যেমন: আইডি কার্ড, বেতনের রশিদ, বা রেজাল্ট শিট)]";
-
-const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
-const DOC_ACCEPT = "image/png,image/jpeg,image/webp,image/heic,application/pdf";
-const IMAGE_ACCEPT = "image/png,image/jpeg,image/webp,image/heic";
-
-function validateFile(file: File, accept: string): string | null {
-  const allowed = accept.split(",");
-  const ok = allowed.some((type) =>
-    type.endsWith("/*") ? file.type.startsWith(type.slice(0, -1)) : file.type === type,
-  );
-  if (!ok) return "That file type isn't supported. Use an image or a PDF.";
-  if (file.size > MAX_FILE_BYTES) return "File is too large — the limit is 10 MB.";
-  return null;
-}
 
 // The user has finished onboarding once name + academic fields are set and
 // the account has left the `unverified` state (i.e. the document was

@@ -13,6 +13,11 @@ export const LEVEL_OPTIONS: AcademicOption[] = [
 
 export const MEDIUM_OPTIONS = ["Bangla", "English"];
 
+// Shared between OnboardingClient.tsx and ProfileClient.tsx — exact label
+// copy mandated for the verification document field.
+export const VERIFICATION_DOC_LABEL =
+  "Verification Document [যেকোনো প্রমাণপত্র যা নিশ্চিত করে আপনি ওই প্রতিষ্ঠানের ছাত্র (যেমন: আইডি কার্ড, বেতনের রশিদ, বা রেজাল্ট শিট)]";
+
 export function levelLabel(value?: string): string | undefined {
   return LEVEL_OPTIONS.find((option) => option.value === value)?.label ?? value;
 }
