@@ -59,8 +59,8 @@ export function HeroEventBanner({ config = heroConfig }: HeroEventBannerProps) {
     };
   }, [status, config.eventId]);
 
-  // "Register Now" opens the rules/terms page; the user reviews them and then
-  // continues to the (login-gated) payment step from there.
+  // "Register Now" opens the registration terms page; the user reviews them
+  // and then continues to the (login-gated) payment step from there.
   function handleRegisterClick() {
     router.push(config.registerHref);
   }

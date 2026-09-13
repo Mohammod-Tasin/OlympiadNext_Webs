@@ -64,7 +64,7 @@ export default async function EventsPage() {
                   )}
 
                   <Link
-                    href={event.is_active ? "/rules" : `/events/${event.id}`}
+                    href={event.is_active ? "/register/terms" : `/events/${event.id}`}
                     className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
                   >
                     {event.is_active ? "Register Now" : "View Details"}

@@ -41,6 +41,6 @@ export const heroConfig: HeroEventConfig = {
   registerButtonText: "Register Now",
   detailsButtonText: "See Details",
   enterButtonText: "Enter Event",
-  registerHref: "/rules",
+  registerHref: "/register/terms",
   detailsHref: "/rules",
 };

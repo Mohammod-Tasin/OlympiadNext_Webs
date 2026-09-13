@@ -1,14 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import { Stepper } from "@/components/ui/Stepper";
 import { ApiError } from "@/lib/api/client";
+import { cn } from "@/lib/utils/cn";
 import {
   getMyRegistrations,
   getRegistrationEvent,
@@ -19,6 +20,31 @@ import type {
   Registration,
   RegistrationEvent,
 } from "@/types/registration";
+
+// Brand colors match bKash/Nagad convention. Logo dimensions preserve each
+// SVG's own aspect ratio (bKash's mark is roughly square; Nagad's vertical
+// logo is taller than wide) at a shared ~22px height.
+const PAYMENT_METHODS: Record<
+  PaymentMethod,
+  { label: string; logo: string; logoWidth: number; logoHeight: number; textClass: string; activeClass: string }
+> = {
+  bkash: {
+    label: "bKash",
+    logo: "/assets/BKash-Icon-Logo.wine.svg",
+    logoWidth: 20,
+    logoHeight: 22,
+    textClass: "text-[#e2136e]",
+    activeClass: "border-[#e2136e] bg-[#e2136e]/5",
+  },
+  nagad: {
+    label: "Nagad",
+    logo: "/assets/Nagad-Vertical-Logo.wine.svg",
+    logoWidth: 14,
+    logoHeight: 22,
+    textClass: "text-[#ec1c24]",
+    activeClass: "border-[#ec1c24] bg-[#ec1c24]/5",
+  },
+};
 
 // bKash personal-retail transaction IDs are 10 alphanumeric characters
 // (e.g. 8N7A6B5C4D). Nagad's are alphanumeric and vary in length; 8–14
@@ -105,6 +131,7 @@ function PaymentContent() {
     : [];
 
   const payNumber = method === "bkash" ? event?.bkash_number : event?.nagad_number;
+  const feeDisplay = event && event.registration_fee > 0 ? `৳ ${event.registration_fee}` : "৳ — (to be confirmed)";
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -243,24 +270,49 @@ function PaymentContent() {
               <CardContent className="flex flex-col gap-4 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-text-muted">{event.title} — registration fee</span>
-                  <span className="font-semibold text-olympiad-900">
-                    {event.registration_fee > 0 ? `৳ ${event.registration_fee}` : "৳ — (to be confirmed)"}
-                  </span>
+                  <span className="font-semibold text-olympiad-900">{feeDisplay}</span>
                 </div>
-                <p className="text-text-muted">
-                  Use <span className="font-medium">Send Money</span> to one of these numbers, then
-                  enter the details below:
-                </p>
+                <div className="flex flex-col gap-1">
+                  <p className="text-text-muted">
+                    Use <strong className="font-semibold text-olympiad-900">Send Money</strong> to send{" "}
+                    {feeDisplay} to one of the{" "}
+                    <strong className="font-semibold text-olympiad-900">personal numbers</strong> below.
+                  </p>
+                  <p className="text-text-muted">
+                    নিচের যেকোনো একটি{" "}
+                    <strong className="font-semibold text-olympiad-900">পার্সোনাল নাম্বারে</strong>{" "}
+                    <strong className="font-semibold text-olympiad-900">Send Money</strong> করে {feeDisplay}{" "}
+                    পাঠান।
+                  </p>
+                </div>
                 <ul className="flex flex-col gap-2">
                   {event.bkash_number && (
                     <li className="flex items-center justify-between rounded-xl border border-black/5 bg-gray-50 px-4 py-2">
-                      <span className="font-medium text-[#e2136e]">bKash</span>
+                      <span className="flex items-center gap-2 font-medium text-[#e2136e]">
+                        <Image
+                          src={PAYMENT_METHODS.bkash.logo}
+                          alt=""
+                          width={PAYMENT_METHODS.bkash.logoWidth}
+                          height={PAYMENT_METHODS.bkash.logoHeight}
+                          unoptimized
+                        />
+                        bKash
+                      </span>
                       <span className="font-mono text-olympiad-900">{event.bkash_number}</span>
                     </li>
                   )}
                   {event.nagad_number && (
                     <li className="flex items-center justify-between rounded-xl border border-black/5 bg-gray-50 px-4 py-2">
-                      <span className="font-medium text-[#ec1c24]">Nagad</span>
+                      <span className="flex items-center gap-2 font-medium text-[#ec1c24]">
+                        <Image
+                          src={PAYMENT_METHODS.nagad.logo}
+                          alt=""
+                          width={PAYMENT_METHODS.nagad.logoWidth}
+                          height={PAYMENT_METHODS.nagad.logoHeight}
+                          unoptimized
+                        />
+                        Nagad
+                      </span>
                       <span className="font-mono text-olympiad-900">{event.nagad_number}</span>
                     </li>
                   )}
@@ -271,6 +323,19 @@ function PaymentContent() {
                     </li>
                   )}
                 </ul>
+
+                {availableMethods.length > 0 && (
+                  <div className="flex items-start gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-xs text-emerald-800">
+                    <svg viewBox="0 0 24 24" fill="none" className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true">
+                      <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <div className="flex flex-col gap-0.5">
+                      <p>Your payment is safely recorded and verified by our team &mdash; it will never be lost.</p>
+                      <p>আপনার পেমেন্ট নিরাপদে সংরক্ষণ করা হয় এবং আমাদের টিম যাচাই করে &mdash; এটি কখনো হারিয়ে যাবে না।</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -283,26 +348,45 @@ function PaymentContent() {
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                   <CardContent className="flex flex-col gap-4">
-                    <Select
-                      label="Payment method"
-                      value={method}
-                      onChange={(e) => {
-                        setMethod(e.target.value as PaymentMethod);
-                        setFieldErrors((prev) => ({ ...prev, trx: undefined }));
-                      }}
-                    >
-                      {availableMethods.map((m) => (
-                        <option key={m} value={m}>
-                          {m === "bkash" ? "bKash" : "Nagad"}
-                        </option>
-                      ))}
-                    </Select>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-sm font-medium text-olympiad-900">Payment method</span>
+                      <div role="group" aria-label="Payment method" className="flex gap-2">
+                        {availableMethods.map((m) => {
+                          const meta = PAYMENT_METHODS[m];
+                          const active = method === m;
+                          return (
+                            <button
+                              key={m}
+                              type="button"
+                              aria-pressed={active}
+                              onClick={() => {
+                                setMethod(m);
+                                setFieldErrors((prev) => ({ ...prev, trx: undefined }));
+                              }}
+                              className={cn(
+                                "flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors",
+                                active ? meta.activeClass : "border-gray-200 bg-white text-text-muted hover:border-gray-300",
+                              )}
+                            >
+                              <Image src={meta.logo} alt="" width={meta.logoWidth} height={meta.logoHeight} unoptimized />
+                              <span className={active ? meta.textClass : undefined}>{meta.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                     {payNumber && (
-                      <p className="-mt-1 text-xs text-text-muted">
-                        Paying {method === "bkash" ? "bKash" : "Nagad"} number{" "}
-                        <span className="font-mono">{payNumber}</span>
-                      </p>
+                      <div className="-mt-1 flex flex-col gap-0.5 text-xs">
+                        <p className={PAYMENT_METHODS[method].textClass}>
+                          Sending money to {PAYMENT_METHODS[method].label} number:{" "}
+                          <span className="font-mono">{payNumber}</span>
+                        </p>
+                        <p className="text-text-muted">
+                          {PAYMENT_METHODS[method].label}-এ টাকা পাঠানো হচ্ছে নাম্বার:{" "}
+                          <span className="font-mono">{payNumber}</span>
+                        </p>
+                      </div>
                     )}
 
                     <Input
@@ -349,8 +433,8 @@ function PaymentContent() {
             )}
 
             <p className="mt-4 text-center text-sm text-text-muted">
-              <Link href="/rules" className="font-medium text-olympiad-500 hover:text-olympiad-800">
-                Back to rules
+              <Link href="/register/terms" className="font-medium text-olympiad-500 hover:text-olympiad-800">
+                Back to terms
               </Link>
             </p>
           </>

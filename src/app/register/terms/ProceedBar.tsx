@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
 /**
- * Sticky action bar for the rules page. Stays pinned to the bottom of the
- * viewport while the terms scroll behind it, then comes to rest above the
- * footer. "Proceed" advances to the (login-gated) payment step.
+ * Sticky action bar for the registration terms page. Stays pinned to the
+ * bottom of the viewport while the terms scroll behind it, then comes to
+ * rest above the footer. "Proceed" advances to the (login-gated) payment step.
  */
 export function ProceedBar() {
   const router = useRouter();

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
-import { ProceedBar } from "./ProceedBar";
 
 export const metadata: Metadata = {
   title: "Rules & Terms | OlympiadNext",
@@ -67,16 +66,15 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
 
 export default function RulesPage() {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-gradient-to-b from-olympiad-50 to-white">
-      <div className="mx-auto w-full max-w-3xl flex-1 px-4 py-12 sm:px-6">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-olympiad-50 to-white">
+      <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
         <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500">
-          Before you register
+          Guidelines
         </span>
 
         <h1 className="mt-3 text-2xl font-bold text-olympiad-900 sm:text-3xl">Rules &amp; Terms</h1>
         <p className="mt-2 text-sm text-text-muted">
-          Read through the olympiad rules and registration terms below. When you are ready,
-          use the button at the bottom to continue to payment.
+          Read through the olympiad rules and registration terms below.
         </p>
 
         <div className="mt-6 flex items-start gap-3 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -104,8 +102,6 @@ export default function RulesPage() {
           ))}
         </Card>
       </div>
-
-      <ProceedBar />
     </div>
   );
 }
