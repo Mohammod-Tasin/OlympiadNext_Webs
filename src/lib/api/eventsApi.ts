@@ -55,3 +55,51 @@ export async function getActiveEvent(): Promise<ActiveEvent | null> {
     return null;
   }
 }
+
+/** One row of `GET /api/client/events/all`. `is_active` is the only
+ * per-event status this listing has to work with; `is_registered` is
+ * deliberately omitted here — the backend always reports it `false` on
+ * this route (it's unauthenticated, unlike the single-event routes), so
+ * it would be misleading to surface it. */
+export interface EventListItem extends ActiveEvent {
+  is_active: boolean;
+}
+
+/** A relative backend path (e.g. "/uploads/xyz.jpg") resolved against the
+ * API origin so it can be requested directly from the browser; an
+ * already-absolute URL is returned unchanged. */
+function resolveImageURL(path: string): string {
+  if (!path || path.startsWith("http")) return path;
+  return `${API_BASE_URL}${path}`;
+}
+
+/**
+ * Fetches every event (active or not) for a listing page, or `[]` when the
+ * request fails for any reason or nothing exists yet. Never throws.
+ */
+export async function getAllEvents(): Promise<EventListItem[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/client/events/all`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+
+    const body = (await res.json()) as { events?: Array<Partial<EventListItem>> } | null;
+    const events = body?.events ?? [];
+
+    return events
+      .filter((e): e is Partial<EventListItem> & Pick<EventListItem, "id" | "title" | "event_date"> =>
+        Boolean(e.id && e.title && e.event_date),
+      )
+      .map((e) => ({
+        id: e.id,
+        title: e.title,
+        description: e.description ?? "",
+        image_url: resolveImageURL(e.image_url ?? ""),
+        event_date: e.event_date,
+        is_active: e.is_active ?? false,
+      }));
+  } catch {
+    return [];
+  }
+}

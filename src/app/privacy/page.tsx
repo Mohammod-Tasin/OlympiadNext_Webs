@@ -313,6 +313,28 @@ const SECTIONS: Array<{ id: string; title: string; content: ReactNode }> = [
     ),
   },
   {
+    id: "account-verification",
+    title: "Account Verification / অ্যাকাউন্ট ভেরিফিকেশন",
+    content: (
+      <p>
+        Every account is verified in two layers: email OTP confirmation at signup, and a manual document review (ID
+        card, salary slip, or result sheet) before the account is marked verified. / প্রতিটা অ্যাকাউন্ট দুই ধাপে
+        ভেরিফাই করা হয়: সাইনআপের সময় ইমেইল OTP নিশ্চিতকরণ, এবং একটা ডকুমেন্ট (ID card, salary slip, বা result sheet)
+        ম্যানুয়ালি রিভিউ করার পর অ্যাকাউন্ট ভেরিফায়েড হিসেবে চিহ্নিত হয়।
+      </p>
+    ),
+  },
+  {
+    id: "device-signal",
+    title: "Device Signal / ডিভাইস সিগন্যাল",
+    content: (
+      <p>
+        A device signal is collected during account activity as part of our security measures. / সিকিউরিটি
+        ব্যবস্থার অংশ হিসেবে অ্যাকাউন্ট কার্যকলাপের সময় একটা ডিভাইস সিগন্যাল সংগ্রহ করা হয়।
+      </p>
+    ),
+  },
+  {
     id: "third-party-links",
     title: "Links to other websites",
     content: (

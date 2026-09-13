@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { ABOUT_LINKS } from "@/data/navLinks";
 
+/** Mirrors Navbar.tsx's link order. The footer has no dropdown, so About's
+ * three sub-links are appended flat rather than nested under one item. */
 const QUICK_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/#about", label: "About" },
+  { href: "/events", label: "Events" },
+  { href: "/champions", label: "Champions" },
   { href: "/rules", label: "Guidelines" },
-  { href: "/fairness", label: "Fairness & Integrity" },
+  ...ABOUT_LINKS,
 ];
 
 export function Footer() {
@@ -45,16 +49,8 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-2 border-t border-white/10 px-4 py-4 text-center text-xs text-white/60 sm:flex-row sm:justify-between sm:px-6">
+      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/60 sm:px-6">
         <span>&copy; {year} OlympiadNext. All rights reserved.</span>
-        <div className="flex items-center gap-4">
-          <Link href="/privacy" className="transition-colors hover:text-white">
-            Privacy Policy
-          </Link>
-          <Link href="/terms" className="transition-colors hover:text-white">
-            Terms of Service
-          </Link>
-        </div>
       </div>
     </footer>
   );

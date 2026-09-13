@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/Button";
-
-const SUBJECTS = ["All", "Mathematics", "Physics", "Chemistry", "Biology"];
+import Link from "next/link";
 
 export function Champions() {
   return (
@@ -11,21 +9,6 @@ export function Champions() {
           <span className="mx-auto mt-4 block h-1 w-16 rounded-full bg-medal-500" aria-hidden="true" />
         </div>
 
-        <div className="mt-10 flex flex-col items-center gap-3">
-          <div className="flex flex-wrap justify-center gap-2">
-            {SUBJECTS.map((subject) => (
-              <Button key={subject} variant={subject === "All" ? "primary" : "outline"} size="sm" disabled>
-                {subject}
-              </Button>
-            ))}
-          </div>
-          <div className="flex flex-wrap justify-center gap-2">
-            <Button variant="primary" size="sm" disabled>
-              2026
-            </Button>
-          </div>
-        </div>
-
         <div className="mt-10 flex min-h-[160px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-olympiad-200 px-6 py-12 text-center">
           <p className="text-sm font-medium text-olympiad-900">
             Our first cohort&apos;s results will appear here once available.
@@ -33,6 +16,15 @@ export function Champions() {
           <p lang="bn" className="text-sm text-text-muted">
             আমাদের প্রথম ব্যাচের ফলাফল প্রকাশিত হলে এখানে দেখা যাবে।
           </p>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/champions"
+            className="inline-flex h-10 items-center justify-center rounded-full border-2 border-olympiad-500 px-4 text-sm font-medium text-olympiad-800 transition-colors hover:bg-olympiad-50"
+          >
+            See All Champions
+          </Link>
         </div>
       </div>
     </section>

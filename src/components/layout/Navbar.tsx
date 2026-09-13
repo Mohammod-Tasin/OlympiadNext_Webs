@@ -6,14 +6,19 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { NavDropdown } from "@/components/layout/NavDropdown";
 import { useAuth } from "@/lib/auth/useAuth";
+import { ABOUT_LINKS } from "@/data/navLinks";
 
-const NAV_LINKS = [
+/** Links before the (conditional) Dashboard entry. */
+const MAIN_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/#about", label: "About" },
-  { href: "/rules", label: "Guidelines" },
-  { href: "/fairness", label: "Fairness & Integrity" },
+  { href: "/events", label: "Events" },
+  { href: "/champions", label: "Champions" },
 ];
+
+/** Links after the (conditional) Dashboard entry, before the About dropdown. */
+const TRAILING_LINKS = [{ href: "/rules", label: "Guidelines" }];
 
 export function Navbar() {
   const { status, user, logout } = useAuth();
@@ -35,7 +40,7 @@ export function Navbar() {
         <BrandLogo />
 
         <div className="hidden items-center gap-6 md:flex">
-          {NAV_LINKS.map((link) => (
+          {MAIN_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -45,22 +50,35 @@ export function Navbar() {
             </Link>
           ))}
 
+          {isAuthenticated && (
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-olympiad-800 transition-colors hover:text-olympiad-500"
+            >
+              Dashboard
+            </Link>
+          )}
+
+          {TRAILING_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-olympiad-800 transition-colors hover:text-olympiad-500"
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          <NavDropdown label="About" links={ABOUT_LINKS} />
+
           {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-olympiad-800 transition-colors hover:text-olympiad-500"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/profile"
-                aria-label={`View profile${displayName ? ` for ${displayName}` : ""}`}
-                className="transition-opacity hover:opacity-80"
-              >
-                <Avatar name={displayName} size="sm" />
-              </Link>
-            </div>
+            <Link
+              href="/profile"
+              aria-label={`View profile${displayName ? ` for ${displayName}` : ""}`}
+              className="transition-opacity hover:opacity-80"
+            >
+              <Avatar name={displayName} size="sm" />
+            </Link>
           ) : (
             <div className="flex items-center gap-3">
               <Button variant="ghost" size="sm" onClick={() => router.push("/login")}>
@@ -93,7 +111,7 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="border-t border-black/5 bg-white/80 px-4 pb-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-3 pt-4">
-            {NAV_LINKS.map((link) => (
+            {MAIN_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -104,6 +122,43 @@ export function Navbar() {
               </Link>
             ))}
 
+            {isAuthenticated && (
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-olympiad-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {TRAILING_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-olympiad-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* No nested dropdown on mobile — the same three links stacked
+                under a plain heading, matching Footer.tsx's flat listing. */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">About</span>
+              {ABOUT_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="pl-2 text-sm font-medium text-olympiad-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
             {isAuthenticated ? (
               <>
                 <Link
@@ -113,13 +168,6 @@ export function Navbar() {
                 >
                   <Avatar name={displayName} size="sm" />
                   <span className="text-sm font-medium text-olympiad-800">{displayName}</span>
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-olympiad-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
                 </Link>
                 <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
                   Logout

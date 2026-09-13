@@ -197,6 +197,31 @@ const SECTIONS: Array<{ id: string; title: string; content: ReactNode }> = [
     ),
   },
   {
+    id: "registration-integrity",
+    title: "Registration Integrity / রেজিস্ট্রেশন সততা",
+    content: (
+      <p>
+        Each student can register only once per event. Every payment transaction ID is checked and can be used only
+        once — the same transaction cannot be reused across registrations. All registrations are held pending until
+        an admin manually reviews and matches the payment before approval. / একজন শিক্ষার্থী একটা ইভেন্টে শুধু
+        একবারই রেজিস্ট্রেশন করতে পারবে। প্রতিটা পেমেন্ট transaction ID যাচাই করা হয় এবং একবারই ব্যবহারযোগ্য। সব
+        রেজিস্ট্রেশন pending অবস্থায় থাকে যতক্ষণ না একজন অ্যাডমিন ম্যানুয়ালি পেমেন্ট মিলিয়ে অনুমোদন দেন।
+      </p>
+    ),
+  },
+  {
+    id: "round-access-control",
+    title: "Round Access Control / রাউন্ড এক্সেস কন্ট্রোল",
+    content: (
+      <p>
+        Access to each exam round is determined server-side, based on your registration status and your results in
+        the previous round — this cannot be bypassed from the browser. / প্রতিটা এক্সাম রাউন্ডে প্রবেশাধিকার
+        সার্ভার-সাইডে নির্ধারিত হয়, আপনার রেজিস্ট্রেশন স্ট্যাটাস এবং আগের রাউন্ডের ফলাফলের ভিত্তিতে — এটা ব্রাউজার
+        থেকে বাইপাস করা সম্ভব না।
+      </p>
+    ),
+  },
+  {
     id: "intellectual-property",
     title: "Intellectual property",
     content: (
