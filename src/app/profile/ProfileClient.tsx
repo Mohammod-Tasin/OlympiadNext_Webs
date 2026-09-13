@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/lib/auth/useAuth";
 import { updateUserProfile } from "@/lib/api/userApi";
@@ -26,6 +26,7 @@ function ProfileField({ label, value }: { label: string; value?: string }) {
 function ProfileContent() {
   const { user, refreshUser, logout } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(user?.full_name ?? "");
@@ -43,6 +44,13 @@ function ProfileContent() {
     setError(null);
     setEditing(true);
   }
+
+  // Lets Quick Actions' "Edit Profile" button link straight into edit mode
+  // via /profile?edit=1, instead of always landing in read mode.
+  useEffect(() => {
+    if (searchParams.get("edit") === "1") startEditing();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -171,7 +179,9 @@ function ProfileContent() {
 export function ProfileClient() {
   return (
     <ProtectedRoute>
-      <ProfileContent />
+      <Suspense fallback={null}>
+        <ProfileContent />
+      </Suspense>
     </ProtectedRoute>
   );
 }

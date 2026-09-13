@@ -5,6 +5,7 @@ import { NoticeBoard } from "@/components/home/NoticeBoard";
 import { HowToParticipate } from "@/components/home/HowToParticipate";
 import { Timeline } from "@/components/home/Timeline";
 import { AboutShikhor } from "@/components/home/AboutShikhor";
+import { Champions } from "@/components/home/Champions";
 import { SectionSkeleton } from "@/components/ui/SectionSkeleton";
 import { heroConfig, type HeroEventConfig } from "@/data/heroConfig";
 import { getActiveEvent } from "@/lib/api/eventsApi";
@@ -80,6 +81,7 @@ export default async function HomePage() {
         <Timeline />
       </Suspense>
       <AboutShikhor />
+      <Champions />
     </div>
   );
 }

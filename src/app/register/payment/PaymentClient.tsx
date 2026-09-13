@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { Stepper } from "@/components/ui/Stepper";
 import { ApiError } from "@/lib/api/client";
 import {
   getMyRegistrations,
@@ -153,6 +154,7 @@ function PaymentContent() {
   return (
     <div className="bg-gradient-to-b from-olympiad-50 to-white">
       <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+        <Stepper currentStep="payment" className="mb-6" />
         <span className="inline-flex w-fit items-center gap-2 rounded-full border border-olympiad-500/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-olympiad-500">
           Final step
         </span>

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { FileInput } from "@/components/ui/FileInput";
 import { Button } from "@/components/ui/Button";
+import { Stepper } from "@/components/ui/Stepper";
 import type { User } from "@/types/auth";
 
 // Exact label copy mandated for the verification document field.
@@ -126,6 +127,7 @@ function OnboardingContent() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
+        <Stepper currentStep="verify" className="mb-6" />
         <div className="rounded-2xl border border-black/5 bg-white p-8 shadow-[0_20px_60px_rgb(0,0,0,0.08)]">
           <p className="text-xs font-medium uppercase tracking-wide text-olympiad-500">Complete your profile</p>
           <h1 className="mt-1 text-xl font-bold text-olympiad-900">A few more details</h1>

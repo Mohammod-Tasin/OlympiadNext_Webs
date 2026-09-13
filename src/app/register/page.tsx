@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { Stepper } from "@/components/ui/Stepper";
 
 export const metadata: Metadata = {
   title: "Register | OlympiadNext",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <div className="page-center">
-      <RegisterForm />
+      <div className="flex w-full max-w-md flex-col gap-6">
+        <Stepper currentStep="account" />
+        <RegisterForm />
+      </div>
     </div>
   );
 }

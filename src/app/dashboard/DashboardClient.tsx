@@ -8,7 +8,6 @@ import { useAuth } from "@/lib/auth/useAuth";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
-import { levelLabel } from "@/lib/constants/academic";
 import { cn } from "@/lib/utils/cn";
 import { getMyRegistrations } from "@/lib/api/registrationsApi";
 import type { Registration } from "@/types/registration";
@@ -206,24 +205,66 @@ function RegistrationsCard({
   );
 }
 
-function InfoRow({ label, value, verified }: { label: string; value?: string; verified?: boolean }) {
+/** Prominent entry point into exam rounds for an approved registration, and
+ * an explanatory state otherwise (loading / load-failed / pending-only /
+ * no registrations at all) — replaces the old hardcoded "Upcoming Event"
+ * placeholder with something actually driven by the caller's data. */
+function ExamRoundsCard({
+  registrations,
+  failed,
+}: {
+  registrations: Registration[] | null;
+  failed: boolean;
+}) {
+  const router = useRouter();
+
+  let content: ReactNode;
+  if (registrations === null) {
+    content = <p className="text-sm text-text-muted">Loading…</p>;
+  } else if (failed) {
+    content = <p className="text-sm text-text-muted">Couldn&apos;t load your exam rounds right now.</p>;
+  } else {
+    const approved = registrations.filter((reg) => reg.status === "approved");
+    if (approved.length > 0) {
+      content = (
+        <div className="flex flex-wrap gap-3">
+          {approved.map((reg) => (
+            <Link
+              key={reg.id}
+              href={`/events/${reg.event_id}`}
+              className="flex flex-1 min-w-[220px] items-center rounded-xl border border-medal-500/30 bg-medal-50 px-5 py-4 text-sm font-semibold text-medal-700 transition-colors hover:bg-medal-100"
+            >
+              Enter {reg.event_title || "Exam"} Rounds
+            </Link>
+          ))}
+        </div>
+      );
+    } else if (registrations.some((reg) => reg.status !== "rejected")) {
+      content = (
+        <p className="text-sm text-text-muted">
+          Your registration is awaiting admin approval — you&apos;ll be able to enter exam rounds once
+          it&apos;s approved.
+        </p>
+      );
+    } else {
+      content = (
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-sm text-text-muted">You haven&apos;t registered for an exam yet.</p>
+          <Button variant="primary" size="sm" onClick={() => router.push("/register/payment")}>
+            Register Now
+          </Button>
+        </div>
+      );
+    }
+  }
+
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-      <div className="min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wide text-text-muted">{label}</p>
-        <p className="mt-0.5 truncate text-sm font-medium text-olympiad-900">{value || "—"}</p>
-      </div>
-      {verified !== undefined && (
-        <span
-          className={cn(
-            "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
-            verified ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600",
-          )}
-        >
-          {verified ? "Verified" : "Unverified"}
-        </span>
-      )}
-    </div>
+    <Card className="lg:col-span-3">
+      <CardHeader>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Exam Rounds</h2>
+      </CardHeader>
+      <CardContent>{content}</CardContent>
+    </Card>
   );
 }
 
@@ -296,37 +337,22 @@ function DashboardContent() {
           )}
 
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
+            <Card className="lg:col-span-3">
               <CardHeader className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Profile Status</h2>
                 <Link href="/profile" className="text-xs font-medium text-olympiad-500 hover:text-olympiad-800">
                   View profile
                 </Link>
               </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-                <InfoRow label="Email" value={user?.email} verified={user?.is_email_verified} />
-                <InfoRow label="Institution" value={user?.institution_name} />
-                <InfoRow label="Level" value={levelLabel(user?.level)} />
+              <CardContent>
+                <p className="text-sm text-text-muted">
+                  Your institution, level, and email verification are on file — visit your profile to review
+                  or update them.
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="flex flex-col">
-              <CardHeader>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-olympiad-800">Upcoming Event</h2>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-olympiad-500/10 text-olympiad-500">
-                  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-                    <rect x="3.5" y="5" width="17" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M3.5 9.5h17M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-semibold text-olympiad-900">Mock Test</p>
-                  <p className="mt-0.5 text-sm text-text-muted">Apr 5, 2026 &middot; 10:00 AM</p>
-                </div>
-              </CardContent>
-            </Card>
+            <ExamRoundsCard registrations={registrations} failed={failed} />
 
             <RegistrationsCard registrations={registrations} failed={failed} />
 
@@ -349,7 +375,12 @@ function DashboardContent() {
                     Admit card not yet issued
                   </p>
                 )}
-                <Button variant="outline" size="sm" className="flex-1" onClick={() => router.push("/profile")}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => router.push("/profile?edit=1")}
+                >
                   Edit Profile
                 </Button>
                 <Button variant="ghost" size="sm" className="flex-1" onClick={() => router.push("/rules")}>
