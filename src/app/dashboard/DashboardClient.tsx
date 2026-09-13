@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 import { getMyRegistrations } from "@/lib/api/registrationsApi";
+import { getEventRounds } from "@/lib/api/roundsApi";
 import type { Registration } from "@/types/registration";
 
 const REGISTRATION_BADGE: Record<Registration["status"], { label: string; className: string }> = {
@@ -37,12 +38,68 @@ function useMyRegistrations() {
   return { registrations, failed };
 }
 
+interface RegistrationHighlight {
+  kind: "winner" | "qualified";
+  /** Only ever set alongside kind: "winner". */
+  rank?: number;
+}
+
+/** For each "approved" registration, fetches that event's rounds once and
+ * reduces them to a single compact highlight — a winner decision (with
+ * rank) anywhere takes priority, else "qualified" if the student has
+ * advanced past any round, else nothing. This page only needs that one
+ * headline status per registration, not the full round-by-round roadmap
+ * (that's /dashboard/results), so the fetched rounds are discarded right
+ * after — never stored in full. Pending/rejected registrations never
+ * fetch, since they can't have round activity yet. */
+function useRegistrationHighlights(registrations: Registration[] | null) {
+  const [highlights, setHighlights] = useState<Record<string, RegistrationHighlight | null>>({});
+
+  useEffect(() => {
+    if (!registrations) return;
+    let cancelled = false;
+
+    registrations
+      .filter((reg) => reg.status === "approved")
+      .forEach((reg) => {
+        getEventRounds(reg.event_id)
+          .then((res) => {
+            if (cancelled) return;
+            const winner = res.rounds.find((r) => r.your_status === "winner");
+            const highlight: RegistrationHighlight | null = winner
+              ? { kind: "winner", rank: winner.rank }
+              : res.rounds.some((r) => r.your_status === "qualified")
+                ? { kind: "qualified" }
+                : null;
+            setHighlights((prev) => ({ ...prev, [reg.id]: highlight }));
+          })
+          .catch(() => {
+            // Best-effort only — the card is still useful without this
+            // badge, so a failure here just shows nothing extra rather
+            // than an error.
+          });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [registrations]);
+
+  return highlights;
+}
+
 /** A registration's footer: admit-card status (download link once issued,
  * otherwise a "not yet issued" note for an approved registration) plus a
  * round-entry action whose label/behavior depends on review status —
  * "Enter Event" links out once approved, "Awaiting Approval" and
  * "Rejected" are inert status text for the other two states. */
-function RegistrationFooter({ registration }: { registration: Registration }) {
+function RegistrationFooter({
+  registration,
+  highlight,
+}: {
+  registration: Registration;
+  highlight?: RegistrationHighlight | null;
+}) {
   const admitCard = registration.admit_card_url ? (
     <a
       href={registration.admit_card_url}
@@ -79,10 +136,22 @@ function RegistrationFooter({ registration }: { registration: Registration }) {
       <span className="text-sm font-medium text-text-muted">Rejected</span>
     );
 
+  const highlightBadge =
+    highlight?.kind === "winner" ? (
+      <span className="inline-flex items-center gap-1 text-sm font-semibold text-medal-700">
+        🏆 Winner{highlight.rank != null ? ` — Rank ${highlight.rank}` : ""}
+      </span>
+    ) : highlight?.kind === "qualified" ? (
+      <span className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+        ✓ Qualified to next round
+      </span>
+    ) : null;
+
   return (
     <div className="mt-2 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-2">
       {admitCard}
       {entryAction}
+      {highlightBadge}
     </div>
   );
 }
@@ -92,9 +161,11 @@ function RegistrationFooter({ registration }: { registration: Registration }) {
 function RegistrationsCard({
   registrations,
   failed,
+  highlights,
 }: {
   registrations: Registration[] | null;
   failed: boolean;
+  highlights: Record<string, RegistrationHighlight | null>;
 }) {
   const router = useRouter();
 
@@ -143,7 +214,7 @@ function RegistrationsCard({
                     {badge.label}
                   </span>
                 </div>
-                <RegistrationFooter registration={reg} />
+                <RegistrationFooter registration={reg} highlight={highlights[reg.id]} />
               </div>
             );
           })
@@ -155,5 +226,6 @@ function RegistrationsCard({
 
 export function DashboardClient() {
   const { registrations, failed } = useMyRegistrations();
-  return <RegistrationsCard registrations={registrations} failed={failed} />;
+  const highlights = useRegistrationHighlights(registrations);
+  return <RegistrationsCard registrations={registrations} failed={failed} highlights={highlights} />;
 }

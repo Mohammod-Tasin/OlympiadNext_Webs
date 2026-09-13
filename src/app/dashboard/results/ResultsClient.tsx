@@ -7,14 +7,21 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 import { getMyRegistrations } from "@/lib/api/registrationsApi";
 import { getEventRounds } from "@/lib/api/roundsApi";
+import { getEventPrizes } from "@/lib/api/prizesApi";
+import { findPrize } from "@/lib/utils/findPrize";
 import type { Registration } from "@/types/registration";
 import type { EventRound, RoundStatus } from "@/types/event";
+import type { PrizeResponse } from "@/types/prize";
 
 interface EventResult {
   registration: Registration;
   /** null = still loading (or not yet requested). */
   rounds: EventRound[] | null;
   failed: boolean;
+  /** null until (and unless) this event's rounds come back with at least
+   * one "winner" — prizes are fetched per-event, not globally, and only
+   * when actually needed. */
+  prizes: PrizeResponse[] | null;
 }
 
 /** Fetches the caller's registrations once, then fans out one
@@ -32,7 +39,7 @@ function useResults() {
       .then((rows) => {
         if (cancelled) return;
         setRegistrations(rows);
-        setResults(rows.map((registration) => ({ registration, rounds: null, failed: false })));
+        setResults(rows.map((registration) => ({ registration, rounds: null, failed: false, prizes: null })));
 
         rows.forEach((registration) => {
           getEventRounds(registration.event_id)
@@ -43,6 +50,18 @@ function useResults() {
                   item.registration.id === registration.id ? { ...item, rounds: res.rounds } : item,
                 ),
               );
+
+              // Scoped to this event only — a student's other registered
+              // events never trigger a prize fetch just because this one
+              // did, and this one only fetches if it actually has a winner.
+              if (res.rounds.some((r) => r.your_status === "winner")) {
+                void getEventPrizes(registration.event_id).then((prizes) => {
+                  if (cancelled) return;
+                  setResults((prev) =>
+                    prev.map((item) => (item.registration.id === registration.id ? { ...item, prizes } : item)),
+                  );
+                });
+              }
             })
             .catch(() => {
               if (cancelled) return;
@@ -142,10 +161,10 @@ function StepCircle({
   );
 }
 
-function WinnerBadge() {
+function WinnerBadge({ rank }: { rank?: number }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-medal-500/15 px-2 py-0.5 text-xs font-semibold text-medal-700">
-      Winner
+      {rank != null ? `Winner — Rank ${rank}` : "Winner"}
     </span>
   );
 }
@@ -153,7 +172,7 @@ function WinnerBadge() {
 /** The connected-path roadmap for one event's rounds, mirroring
  * HowToParticipate.tsx's mobile-vertical / desktop-horizontal pattern:
  * a dotted line on mobile, a line-connected row on desktop. */
-function RoundRoadmap({ rounds }: { rounds: EventRound[] }) {
+function RoundRoadmap({ rounds, prizes }: { rounds: EventRound[]; prizes: PrizeResponse[] | null }) {
   if (rounds.length === 0) {
     return <p className="text-sm text-text-muted">No rounds have been configured for this event yet.</p>;
   }
@@ -163,13 +182,15 @@ function RoundRoadmap({ rounds }: { rounds: EventRound[] }) {
       <ol className="flex flex-col gap-6 border-l-2 border-olympiad-300 pl-8 sm:hidden">
         {rounds.map((round) => {
           const state = stepState(round.your_status);
+          const prize = state === "winner" ? findPrize(prizes, round.rank) : undefined;
           return (
             <li key={round.id} className="relative">
               <StepCircle state={state} roundOrder={round.round_order} className="absolute -left-[48px] top-0 h-8 w-8" />
               <p className="text-sm font-medium text-olympiad-900">{round.round_name}</p>
               {state === "winner" && (
-                <div className="mt-1">
-                  <WinnerBadge />
+                <div className="mt-1 flex flex-col items-start gap-0.5">
+                  <WinnerBadge rank={round.rank} />
+                  {prize && <span className="text-xs font-medium text-medal-700">{prize.prize_name}</span>}
                 </div>
               )}
             </li>
@@ -180,12 +201,18 @@ function RoundRoadmap({ rounds }: { rounds: EventRound[] }) {
       <ol className="hidden sm:flex sm:items-start">
         {rounds.map((round, i) => {
           const state = stepState(round.your_status);
+          const prize = state === "winner" ? findPrize(prizes, round.rank) : undefined;
           return (
             <Fragment key={round.id}>
               <li className="flex flex-1 flex-col items-center gap-2 px-2 text-center">
                 <StepCircle state={state} roundOrder={round.round_order} className="h-10 w-10" />
                 <p className="text-sm font-medium text-olympiad-900">{round.round_name}</p>
-                {state === "winner" && <WinnerBadge />}
+                {state === "winner" && (
+                  <>
+                    <WinnerBadge rank={round.rank} />
+                    {prize && <span className="text-xs font-medium text-medal-700">{prize.prize_name}</span>}
+                  </>
+                )}
               </li>
               {i < rounds.length - 1 && (
                 <div className="mt-5 h-0.5 flex-1 self-start bg-olympiad-300" aria-hidden="true" />
@@ -199,7 +226,7 @@ function RoundRoadmap({ rounds }: { rounds: EventRound[] }) {
 }
 
 function EventRoadmapCard({ result }: { result: EventResult }) {
-  const { registration, rounds, failed } = result;
+  const { registration, rounds, failed, prizes } = result;
 
   return (
     <Card>
@@ -214,7 +241,7 @@ function EventRoadmapCard({ result }: { result: EventResult }) {
         ) : rounds === null ? (
           <p className="text-sm text-text-muted">Loading…</p>
         ) : (
-          <RoundRoadmap rounds={rounds} />
+          <RoundRoadmap rounds={rounds} prizes={prizes} />
         )}
       </CardContent>
     </Card>

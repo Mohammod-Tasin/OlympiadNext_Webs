@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { ApiError } from "@/lib/api/client";
 import { getEventRounds, getEventById, enterRound } from "@/lib/api/roundsApi";
+import { getEventPrizes } from "@/lib/api/prizesApi";
+import { findPrize } from "@/lib/utils/findPrize";
 import type { EventRound, EventRoundsResponse } from "@/types/event";
+import type { PrizeResponse } from "@/types/prize";
 
 const DEFAULT_TITLE = "Event Rounds";
 
@@ -47,15 +50,19 @@ function RoundCard({
   eventId,
   entering,
   enterError,
+  prizes,
   onEnter,
 }: {
   round: EventRound;
   eventId: string;
   entering: boolean;
   enterError?: string;
+  prizes: PrizeResponse[] | null;
   onEnter: (round: EventRound) => void;
 }) {
   const isDisabledState = round.your_status === "eliminated";
+  const isWinner = round.your_status === "winner";
+  const prize = isWinner ? findPrize(prizes, round.rank) : undefined;
 
   return (
     <Card className={isDisabledState ? "opacity-60" : undefined}>
@@ -64,9 +71,9 @@ function RoundCard({
           <h3 className="font-semibold text-olympiad-900">{round.round_name}</h3>
           <p className="text-sm text-text-muted">{formatDate(round.start_at)}</p>
         </div>
-        {round.your_status === "winner" && (
+        {isWinner && (
           <span className="inline-flex items-center gap-2 rounded-full bg-medal-500/10 px-3 py-1.5 text-sm font-semibold text-medal-700 ring-1 ring-inset ring-medal-500/30">
-            🏆 Winner
+            {round.rank != null ? `🏆 Winner — Rank ${round.rank}` : "🏆 Winner"}
           </span>
         )}
       </CardHeader>
@@ -110,8 +117,22 @@ function RoundCard({
           </p>
         )}
 
-        {round.your_status === "winner" && (
-          <p className="text-sm font-medium text-medal-700">Congratulations — you won this event!</p>
+        {isWinner && (
+          <>
+            <p className="text-sm font-medium text-medal-700">
+              {round.rank != null
+                ? `Congratulations — you placed #${round.rank} in this event!`
+                : "Congratulations — you won this event!"}
+            </p>
+            {prize && (
+              <p className="text-sm text-medal-700">
+                You won: <span className="font-semibold">{prize.prize_name}</span>
+                {prize.prize_description && (
+                  <span className="mt-0.5 block text-xs text-text-muted">{prize.prize_description}</span>
+                )}
+              </p>
+            )}
+          </>
         )}
 
         {round.your_status === null && (
@@ -130,6 +151,7 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [enteringId, setEnteringId] = useState<string | null>(null);
   const [enterErrors, setEnterErrors] = useState<Record<string, string>>({});
+  const [prizes, setPrizes] = useState<PrizeResponse[] | null>(null);
 
   async function load() {
     setLoading(true);
@@ -155,6 +177,20 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
+
+  // Prize tiers are only relevant to a winner, so this only fires once
+  // getEventRounds has come back with at least one "winner" round —
+  // students who never won never trigger this request.
+  useEffect(() => {
+    if (!data?.rounds.some((r) => r.your_status === "winner")) return;
+    let cancelled = false;
+    void getEventPrizes(eventId).then((rows) => {
+      if (!cancelled) setPrizes(rows);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [data, eventId]);
 
   async function handleEnter(round: EventRound) {
     setEnteringId(round.id);
@@ -216,6 +252,7 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
                     eventId={eventId}
                     entering={enteringId === round.id}
                     enterError={enterErrors[round.id] || undefined}
+                    prizes={prizes}
                     onEnter={handleEnter}
                   />
                 ))}

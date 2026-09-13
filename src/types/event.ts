@@ -30,7 +30,14 @@ export interface EventRound {
   /** The round's own lifecycle status (distinct from the caller's
    * `your_status`) — not currently rendered by the rounds page. */
   status: string;
+  /** Marks the event's one designated final round — only a final round's
+   * winner decision carries a rank. */
+  is_final: boolean;
   your_status: RoundStatus | null;
+  /** The caller's placement (1st, 2nd, 3rd…) when your_status is
+   * "winner". The backend sends this with `omitempty`, so the key is
+   * absent (not `null`) for every other status. */
+  rank?: number;
   created_at: string;
   updated_at: string;
 }
