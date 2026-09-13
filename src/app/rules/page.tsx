@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
-  title: "Rules & Terms | OlympiadNext",
+  title: "Rules & Terms | Shikhor",
   description: "Olympiad rules, terms, and registration guidelines to review before payment.",
 };
 

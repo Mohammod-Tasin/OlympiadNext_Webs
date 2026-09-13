@@ -5,8 +5,8 @@ import { getAllEvents } from "@/lib/api/eventsApi";
 import { formatEventDate } from "@/lib/utils/formatEventDate";
 
 export const metadata: Metadata = {
-  title: "All Events | OlympiadNext",
-  description: "Browse every olympiad event hosted on OlympiadNext, active and past.",
+  title: "All Events | Shikhor",
+  description: "Browse every olympiad event hosted on Shikhor, active and past.",
 };
 
 /**
@@ -25,7 +25,7 @@ export default async function EventsPage() {
     <div className="bg-gradient-to-b from-olympiad-50 to-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h1 className="text-2xl font-bold text-olympiad-900 sm:text-3xl">All Events</h1>
-        <p className="mt-1 text-sm text-text-muted">Every olympiad hosted on OlympiadNext, active and past.</p>
+        <p className="mt-1 text-sm text-text-muted">Every olympiad hosted on Shikhor, active and past.</p>
 
         {events.length === 0 ? (
           <Card className="mt-8">

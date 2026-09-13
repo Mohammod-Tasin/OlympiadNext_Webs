@@ -42,7 +42,7 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-wide text-olympiad-50">Contact</h4>
           <ul className="mt-3 flex flex-col gap-2 text-sm text-white/80">
-            <li>olympiadnext@gmail.com</li>
+            <li>admins.shikhor@gmail.com</li>
             <li>+8801771080238</li>
             <li>RUET, 6204</li>
           </ul>
@@ -50,7 +50,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/60 sm:px-6">
-        <span>&copy; {year} OlympiadNext. All rights reserved.</span>
+        <span>&copy; {year} Shikhor. All rights reserved.</span>
       </div>
     </footer>
   );

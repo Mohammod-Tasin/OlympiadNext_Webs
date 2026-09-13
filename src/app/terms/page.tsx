@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 /** Bump this whenever the terms text below changes. */
 const LAST_UPDATED = "10 September 2026";
-const CONTACT_EMAIL = "tasin9209@gmail.com";
+const CONTACT_EMAIL = "admins.shikhor@gmail.com";
 
 function MailLink({ children }: { children?: ReactNode }) {
   return (

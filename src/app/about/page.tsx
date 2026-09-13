@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
-  title: "About Us | OlympiadNext",
+  title: "About Us | Shikhor",
   description: "Shikhor's story, what we do, and the values behind our online olympiads.",
 };
 

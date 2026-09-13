@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Champions | OlympiadNext",
-  description: "Meet the top performers and champions from OlympiadNext's olympiad events.",
+  title: "Champions | Shikhor",
+  description: "Meet the top performers and champions from Shikhor's olympiad events.",
 };
 
 const SUBJECTS = ["All", "Mathematics", "Physics", "Chemistry", "Biology"];

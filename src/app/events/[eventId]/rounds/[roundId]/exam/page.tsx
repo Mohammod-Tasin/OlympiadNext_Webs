@@ -3,7 +3,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ExamRoundGate } from "./ExamRoundGate";
 
 export const metadata: Metadata = {
-  title: "Exam | OlympiadNext",
+  title: "Exam | Shikhor",
   description: "Your olympiad exam session.",
 };
 

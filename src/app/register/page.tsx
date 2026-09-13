@@ -3,8 +3,8 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Stepper } from "@/components/ui/Stepper";
 
 export const metadata: Metadata = {
-  title: "Register | OlympiadNext",
-  description: "Create an OlympiadNext account to register for national academic olympiads.",
+  title: "Register | Shikhor",
+  description: "Create an Shikhor account to register for national academic olympiads.",
 };
 
 export default function RegisterPage() {

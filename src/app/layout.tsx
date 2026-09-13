@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OlympiadNext",
+  title: "Shikhor",
   description: "Registration and login",
 };
 

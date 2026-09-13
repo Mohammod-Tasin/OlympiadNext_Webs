@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
-  title: "Settings | OlympiadNext",
+  title: "Settings | Shikhor",
   description: "Manage your account settings.",
 };
 

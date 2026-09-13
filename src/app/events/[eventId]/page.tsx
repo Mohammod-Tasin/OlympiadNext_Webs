@@ -3,7 +3,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { EventRoundsContent } from "./EventRoundsContent";
 
 export const metadata: Metadata = {
-  title: "Event Rounds | OlympiadNext",
+  title: "Event Rounds | Shikhor",
   description: "View your entry status and enter ongoing rounds for this olympiad event.",
 };
 

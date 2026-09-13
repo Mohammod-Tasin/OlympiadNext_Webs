@@ -12,7 +12,7 @@ import { getActiveEvent } from "@/lib/api/eventsApi";
 import { formatEventDate } from "@/lib/utils/formatEventDate";
 
 export const metadata: Metadata = {
-  title: "OlympiadNext",
+  title: "Shikhor",
   description: "Discover upcoming academic olympiads, register your school, and track important exam dates.",
 };
 

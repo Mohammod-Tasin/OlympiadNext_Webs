@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { ProceedBar } from "./ProceedBar";
 
 export const metadata: Metadata = {
-  title: "Exam Terms | OlympiadNext",
+  title: "Exam Terms | Shikhor",
   description: "Anti-cheating and exam-conduct terms to review before completing registration payment.",
 };
 
