@@ -1,5 +1,6 @@
 import { apiFetch, ApiError } from "./client";
 import type { EventRoundsResponse } from "@/types/event";
+import type { MyRegistrationStatus } from "@/types/registration";
 
 export interface EventSummary {
   id: string;
@@ -35,4 +36,17 @@ export async function getEventRounds(eventId: string): Promise<EventRoundsRespon
  */
 export function enterRound(roundId: string): Promise<{ allowed: true }> {
   return apiFetch<{ allowed: true }>(`/api/client/rounds/${roundId}/enter`, { method: "POST" });
+}
+
+/**
+ * The caller's own registration sub-state for an event — "none" when no
+ * registration row exists yet, otherwise the row's actual status. Lets a
+ * "not eligible" round message distinguish "never registered" from
+ * "pending review" from "rejected" instead of a collapsed boolean.
+ */
+export async function getMyRegistrationStatus(eventId: string): Promise<MyRegistrationStatus> {
+  const { status } = await apiFetch<{ status: MyRegistrationStatus }>(
+    `/api/client/events/${eventId}/my-registration-status`,
+  );
+  return status;
 }

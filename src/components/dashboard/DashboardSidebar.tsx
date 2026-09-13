@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth/useAuth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { VerificationStatusBadge } from "@/components/profile/VerificationStatusBadge";
 import { cn } from "@/lib/utils/cn";
 
 const SIDEBAR_LINKS: Array<{ href: string; label: string; icon: ReactNode }> = [
@@ -74,6 +75,7 @@ export function DashboardSidebar() {
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-olympiad-900">{displayName}</p>
             <p className="truncate text-xs text-text-muted">{user?.email}</p>
+            <VerificationStatusBadge status={user?.verification_status} className="mt-1" />
           </div>
         </Link>
 

@@ -9,6 +9,7 @@ import { ApiError } from "@/lib/api/client";
 import { LEVEL_OPTIONS, MEDIUM_OPTIONS, VERIFICATION_DOC_LABEL, levelLabel } from "@/lib/constants/academic";
 import { DOC_ACCEPT, validateFile } from "@/lib/utils/fileValidation";
 import { Avatar } from "@/components/ui/Avatar";
+import { VerificationStatusBadge } from "@/components/profile/VerificationStatusBadge";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -118,6 +119,7 @@ function ProfileContent() {
         <div>
           <h1 className="text-2xl font-bold text-olympiad-900">{user?.full_name || "Your Profile"}</h1>
           <p className="text-sm text-text-muted">{user?.email}</p>
+          <VerificationStatusBadge status={user?.verification_status} className="mt-1.5" />
         </div>
       </div>
 

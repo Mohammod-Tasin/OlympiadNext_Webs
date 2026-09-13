@@ -7,13 +7,15 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { ApiError } from "@/lib/api/client";
-import { getEventRounds, getEventById, enterRound } from "@/lib/api/roundsApi";
+import { getEventRounds, getEventById, enterRound, getMyRegistrationStatus } from "@/lib/api/roundsApi";
 import { getEventPrizes } from "@/lib/api/prizesApi";
 import { findPrize } from "@/lib/utils/findPrize";
 import { useAuth } from "@/lib/auth/useAuth";
 import { levelLabel } from "@/lib/constants/academic";
 import type { EventRound, EventRoundsResponse } from "@/types/event";
 import type { PrizeResponse } from "@/types/prize";
+import type { MyRegistrationStatus } from "@/types/registration";
+import type { User } from "@/types/auth";
 
 const DEFAULT_TITLE = "Event Rounds";
 
@@ -22,6 +24,97 @@ const REASON_TEXT: Record<string, string> = {
   "no active registration for this event": "You don't have an active registration for this event.",
   "not qualified from the previous round": "You didn't qualify from the previous round.",
 };
+
+interface NotEligibleReason {
+  en: string;
+  bn: string;
+  linkHref: string;
+  linkEn: string;
+  linkBn: string;
+}
+
+// Priority order matches the backend's own eligibility checks (level, then
+// identity verification, then registration): level mismatch is checked
+// first since nothing else matters if the round isn't even open to this
+// student's level, then verification (a separate concern from payment
+// approval), and only once both pass does registrationStatus (fetched
+// separately, see the effect below) get consulted. Returns null only
+// while that fetch is still in flight — every other branch is
+// synchronous, sourced from `user` (already loaded via useAuth()).
+function resolveNotEligibleReason(
+  roundLevel: string | undefined,
+  user: User | null,
+  registrationStatus: MyRegistrationStatus | null,
+): NotEligibleReason | null {
+  if (roundLevel && user?.level && user.level !== roundLevel) {
+    return {
+      en: `This round is only open to ${levelLabel(roundLevel)} students.`,
+      bn: `এই রাউন্ডটি শুধুমাত্র ${levelLabel(roundLevel)} শিক্ষার্থীদের জন্য উন্মুক্ত।`,
+      linkHref: "/profile",
+      linkEn: "View profile",
+      linkBn: "প্রোফাইল দেখুন",
+    };
+  }
+
+  if (user?.verification_status !== "verified") {
+    if (user?.verification_status === "pending") {
+      return {
+        en: "Your identity verification is pending review.",
+        bn: "আপনার পরিচয় যাচাইকরণ পর্যালোচনাধীন রয়েছে।",
+        linkHref: "/profile",
+        linkEn: "View profile",
+        linkBn: "প্রোফাইল দেখুন",
+      };
+    }
+    if (user?.verification_status === "rejected") {
+      return {
+        en: "Your identity verification was rejected.",
+        bn: "আপনার পরিচয় যাচাইকরণ প্রত্যাখ্যান করা হয়েছে।",
+        linkHref: "/profile",
+        linkEn: "Update your documents",
+        linkBn: "ডকুমেন্ট আপডেট করুন",
+      };
+    }
+    return {
+      en: "You haven't submitted your identity verification yet.",
+      bn: "আপনি এখনও আপনার পরিচয় যাচাইকরণ জমা দেননি।",
+      linkHref: "/profile",
+      linkEn: "Complete verification",
+      linkBn: "যাচাইকরণ সম্পন্ন করুন",
+    };
+  }
+
+  if (registrationStatus === "none") {
+    return {
+      en: "You haven't registered for this event yet.",
+      bn: "আপনি এখনও এই ইভেন্টের জন্য নিবন্ধন করেননি।",
+      linkHref: "/register/terms",
+      linkEn: "Register now",
+      linkBn: "এখনই নিবন্ধন করুন",
+    };
+  }
+  if (registrationStatus === "pending") {
+    return {
+      en: "Your registration is awaiting payment approval.",
+      bn: "আপনার নিবন্ধন পেমেন্ট অনুমোদনের অপেক্ষায় রয়েছে।",
+      linkHref: "/register/payment",
+      linkEn: "Check registration status",
+      linkBn: "নিবন্ধনের অবস্থা দেখুন",
+    };
+  }
+  if (registrationStatus === "rejected") {
+    return {
+      en: "Your registration was rejected.",
+      bn: "আপনার নিবন্ধন প্রত্যাখ্যান করা হয়েছে।",
+      linkHref: "/register/payment",
+      linkEn: "View details",
+      linkBn: "বিস্তারিত দেখুন",
+    };
+  }
+
+  // registrationStatus is still loading (null) — caller shows a loading row.
+  return null;
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString(undefined, {
@@ -181,10 +274,12 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
   const [enteringId, setEnteringId] = useState<string | null>(null);
   const [enterErrors, setEnterErrors] = useState<Record<string, string>>({});
   const [prizes, setPrizes] = useState<PrizeResponse[] | null>(null);
+  const [registrationStatus, setRegistrationStatus] = useState<MyRegistrationStatus | null>(null);
 
   async function load() {
     setLoading(true);
     setLoadError(null);
+    setRegistrationStatus(null);
     try {
       setData(await getEventRounds(eventId));
     } catch (err) {
@@ -220,6 +315,32 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
       cancelled = true;
     };
   }, [data, eventId]);
+
+  // Only round 1's your_status is ever "not_eligible" (see YourStatus on
+  // the backend), so data.rounds[0] is always the relevant round here.
+  const roundLevel = data?.rounds[0]?.level;
+  const notEligible = data?.rounds[0]?.your_status === "not_eligible";
+  const levelMismatch = Boolean(roundLevel && user?.level && user.level !== roundLevel);
+  const verificationBlocked = user?.verification_status !== "verified";
+  // Skip the extra request when a simpler reason (level or verification)
+  // already explains "not_eligible" — resolveNotEligibleReason never
+  // reaches the registration branch in that case anyway.
+  const needsRegistrationStatus = notEligible && !levelMismatch && !verificationBlocked;
+
+  useEffect(() => {
+    if (!needsRegistrationStatus) return;
+    let cancelled = false;
+    getMyRegistrationStatus(eventId)
+      .then((status) => {
+        if (!cancelled) setRegistrationStatus(status);
+      })
+      .catch(() => {
+        if (!cancelled) setRegistrationStatus(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [needsRegistrationStatus, eventId]);
 
   async function handleEnter(round: EventRound) {
     setEnteringId(round.id);
@@ -266,22 +387,29 @@ export function EventRoundsContent({ eventId }: { eventId: string }) {
             </p>
           )}
 
-          {data.rounds[0]?.your_status === "not_eligible" ? (
+          {notEligible ? (
             <Card className="mt-8">
               <CardContent className="flex flex-col gap-3">
-                <p className="text-sm text-text-muted">
-                  You don&apos;t have an approved registration for this event yet, so round details
-                  aren&apos;t available. If you&apos;ve already registered, it may still be pending
-                  verification — check your registration status for updates.
-                </p>
-                <div className="flex flex-wrap gap-4 text-sm font-medium">
-                  <Link href="/register/payment" className="text-olympiad-500 hover:text-olympiad-800">
-                    Check registration status
-                  </Link>
-                  <Link href="/profile" className="text-olympiad-500 hover:text-olympiad-800">
-                    View profile
-                  </Link>
-                </div>
+                {(() => {
+                  const reason = resolveNotEligibleReason(roundLevel, user, registrationStatus);
+                  if (!reason) {
+                    return <p className="text-sm text-text-muted">Checking your registration status…</p>;
+                  }
+                  return (
+                    <>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm text-text-muted">{reason.en}</p>
+                        <p className="text-sm text-text-muted">{reason.bn}</p>
+                      </div>
+                      <Link
+                        href={reason.linkHref}
+                        className="w-fit text-sm font-medium text-olympiad-500 hover:text-olympiad-800"
+                      >
+                        {reason.linkEn} / {reason.linkBn}
+                      </Link>
+                    </>
+                  );
+                })()}
               </CardContent>
             </Card>
           ) : (

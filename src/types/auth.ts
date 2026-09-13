@@ -4,8 +4,9 @@
  * - `pending`    — onboarding submitted, awaiting admin review (full browsing,
  *                  exam entry still gated)
  * - `verified`   — approved
+ * - `rejected`   — admin rejected the submitted document; student may resubmit
  */
-export type VerificationStatus = "unverified" | "pending" | "verified";
+export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 
 export interface User {
   user_id: string;

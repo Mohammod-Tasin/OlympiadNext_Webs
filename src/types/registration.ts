@@ -11,6 +11,11 @@ export type PaymentMethod = "bkash" | "nagad";
 
 export type RegistrationStatus = "pending" | "approved" | "rejected";
 
+/** Body of `GET /api/client/events/{eventId}/my-registration-status`: the
+ * caller's registration sub-state for that event, "none" when no
+ * registration row exists yet. */
+export type MyRegistrationStatus = RegistrationStatus | "none";
+
 /** Body of `POST /api/user/registrations`. */
 export interface CreateRegistrationRequest {
   event_id: string;
