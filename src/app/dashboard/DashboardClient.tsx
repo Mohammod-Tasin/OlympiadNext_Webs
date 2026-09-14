@@ -115,6 +115,8 @@ function RegistrationFooter({
     </a>
   ) : registration.status === "approved" ? (
     <span className="text-xs text-text-muted">Admit card: not yet issued</span>
+  ) : registration.status === "pending" ? (
+    <span className="text-xs text-text-muted">Admit card: available after approval</span>
   ) : null;
 
   const entryAction =
